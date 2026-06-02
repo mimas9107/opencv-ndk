@@ -12,6 +12,6 @@
   * desktop wm: wayland+ sway wm, (self-compiled wlroots, and sway related libraries.)
   * python3: system-wise python version 3.13.5,
   * Target Android phone: huawei p30 pro, android 12, EMUI v12,
-  * Main project directory: /home/mimas/project/opencv-ndk.
+  * Main project directory: /usr/local/home/mimas/project/opencv-ndk.
   
 - 

@@ -12,7 +12,7 @@ export PATH="${JAVA_HOME}/bin:${PATH}"
 export OPENCV_SOURCE_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv"
 export OPENCV_CONTRIB_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv_contrib"
 export ANDROID_NDK_ROOT="/home/mimas/Android/Sdk/ndk/30.0.14904198"
-export PROJECT_ROOT="/home/mimas/project/opencv-ndk"
+export PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
 
 # 3. 定義編譯與安裝輸出目錄
 export BUILD_DIR="${PROJECT_ROOT}/build/opencv_android_arm64"

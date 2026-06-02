@@ -30,14 +30,14 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 ## 2. 解決方案設計
 
 ### 2.1 Kotlin 端：動態解析度對調
-在 [MainActivity.kt](file:///home/mimas/project/opencv-ndk/app/src/main/java/com/example/opencvndk/MainActivity.kt) 中：
+在 [MainActivity.kt](file:///usr/local/home/mimas/project/opencv-ndk/app/src/main/java/com/example/opencvndk/MainActivity.kt) 中：
 - 獲取 `image.imageInfo.rotationDegrees`。
 - 如果旋轉角度為 90 或 270 度，代表渲染出的圖像其寬與高會與原始影像幀互換。
 - 據此，動態分配 `Bitmap.createBitmap(targetWidth, targetHeight, ...)`，將寬高對調。
 - 將 `rotationDegrees` 作為參數傳遞予 JNI 接口。
 
 ### 2.2 C++ JNI 原生層：利用 OpenCV 高效旋轉
-在 [opencv-jni.cpp](file:///home/mimas/project/opencv-ndk/app/src/main/cpp/opencv-jni.cpp) 中：
+在 [opencv-jni.cpp](file:///usr/local/home/mimas/project/opencv-ndk/app/src/main/cpp/opencv-jni.cpp) 中：
 - 接收 `jint rotation_degrees`。
 - 在提取 Y 亮度通道建置成 `cv::Mat mat_y` 後，調用 OpenCV 的 `cv::rotate()` 進行矩陣高速變換：
   - `90` 度 -> `cv::ROTATE_90_CLOCKWISE`
@@ -66,7 +66,7 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 adb devices
 
 # 2. 覆蓋安裝新版 APK
-adb install -r /home/mimas/project/opencv-ndk/app/build/outputs/apk/debug/app-debug.apk
+adb install -r /usr/local/home/mimas/project/opencv-ndk/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 **驗證重點:**

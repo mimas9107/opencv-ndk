@@ -15,7 +15,7 @@ export PATH="${JAVA_HOME}/bin:${PATH}"
 OPENCV_SOURCE_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv"
 OPENCV_CONTRIB_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv_contrib"
 ANDROID_NDK_ROOT="/home/mimas/Android/Sdk/ndk/30.0.14904198"
-PROJECT_ROOT="/home/mimas/project/opencv-ndk"
+PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
 BUILD_DIR="${PROJECT_ROOT}/build/opencv_android_arm64"
 INSTALL_DIR="${PROJECT_ROOT}/build/opencv_android_install"
 
