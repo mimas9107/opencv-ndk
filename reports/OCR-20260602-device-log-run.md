@@ -18,7 +18,8 @@ description: "P30 Pro 上傳後的首輪 logcat 驗證摘要"
 - OCR 模型成功載入到 `/data/user/0/com.example.opencvndk/files/ocr`
 - OCR pipeline 有正常執行，且在 `/tmp/log-opencv-ocr0.txt` 中可觀察到持續的候選框輸出
 - 這份新的證據比先前的 `/tmp/log-opencv-ocr.txt` 更完整，能直接證明 detection 與尺寸 gate 已在裝置上運作
-- 目前 log 還沒有直接顯示最終辨識文字結果，因此「偵測成功」與「辨識文字已成功回傳」仍需分開看待
+- 裝置 UI 已成功顯示辨識結果 `#1 logitech (conf=0.99)`
+- 因此 `4.1` 的最低驗證目標已達成，後續只剩 preview 保護與門檻調整的收斂工作
 
 ## 觀察到的關鍵訊號
 
@@ -29,16 +30,18 @@ description: "P30 Pro 上傳後的首輪 logcat 驗證摘要"
 - `OpenCV-NDK-JNI: OCR 偵測候選框數量: 41`
 - `OpenCV-NDK-JNI: OCR 候選框 #... 放行`
 - `OpenCV-NDK-JNI: OCR 候選框 #... 被略過: 太小`
+- UI 顯示 `#1 logitech (conf=0.99)`
 
 ## 目前狀態
 
 - preview 與權限流程未出現 crash
 - OCR detection 管線已可穩定進入候選框輸出階段
 - ROI 尺寸過濾也已在裝置上生效，能明確區分放行與略過
-- 下一個待確認點是辨識文字是否有被穩定回傳到 UI 或 log
+- OCR 最小可用結果已在 UI 上可見
+- 下一個待確認點是 preview 保護與門檻調整是否需要收斂
 
 ## 下一步
 
-- 直接確認 UI 上最近一次 OCR 結果是否有更新
-- 如果要從 log 追認辨識結果，補一個更明確的 recognition log 或將回傳 JSON 內容印出來
-- 若 UI 沒有穩定更新，再針對節流頻率與文字場景做調整
+- 確認 preview、旋轉修正與權限流程仍維持正常
+- 依實機觀察決定是否需要調整 detection 門檻或 OCR 節流頻率
+- 若辨識場景有波動，再補充更多不同文字樣本做回歸驗證
