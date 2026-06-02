@@ -3,6 +3,7 @@ package com.example.opencvndk
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -14,13 +15,22 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.opencvndk.databinding.ActivityMainBinding
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.File
+import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var ocrExecutor: ExecutorService
+    private lateinit var ocrModelDir: File
 
     // 用於 JNI 寫入並顯示的雙緩衝 Bitmap
     private var outputBitmap: Bitmap? = null
@@ -28,6 +38,15 @@ class MainActivity : AppCompatActivity() {
     // 效能計算輔助變數
     private var frameCount = 0
     private var lastFpsTimestamp = System.currentTimeMillis()
+    private var lastOcrDispatchTimestamp = 0L
+    private val ocrInFlight = AtomicBoolean(false)
+
+    private companion object {
+        private const val TAG = "MainActivity"
+        private const val REQUEST_CODE_PERMISSIONS = 10
+        private const val OCR_THROTTLE_MS = 400L
+        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +54,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+        ocrExecutor = Executors.newSingleThreadExecutor()
+        ocrModelDir = File(filesDir, "ocr").apply { mkdirs() }
+        syncOcrAssetsToPrivateDir()
+        binding.textOcrResult.text = "OCR 模型準備中..."
 
         // 檢查並請求相機權限
         if (allPermissionsGranted()) {
@@ -61,9 +84,9 @@ class MainActivity : AppCompatActivity() {
                 .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
                 .build()
 
-            imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                processImageFrame(imageProxy)
-            }
+        imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
+            processImageFrame(imageProxy)
+        }
 
             // 預設使用後置鏡頭
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -135,6 +158,7 @@ class MainActivity : AppCompatActivity() {
                 if (now - lastFpsTimestamp >= 1000) {
                     val fps = frameCount * 1000.0 / (now - lastFpsTimestamp)
                     binding.textStatus.text = String.format(
+                        Locale.US,
                         "解析度: %dx%d | JNI處理: %d ms | FPS: %.1f",
                         width, height, processTime, fps
                     )
@@ -144,8 +168,153 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        dispatchOcrIfNeeded(
+            yPlane = yPlane,
+            yRowStride = planes[0].rowStride,
+            width = width,
+            height = height,
+            rotationDegrees = rotationDegrees
+        )
+
         // 5. 必須關閉 image 釋放 CameraX 的緩衝區，否則會阻塞下一幀的解析
         image.close()
+    }
+
+    private fun dispatchOcrIfNeeded(
+        yPlane: ByteBuffer,
+        yRowStride: Int,
+        width: Int,
+        height: Int,
+        rotationDegrees: Int
+    ) {
+        val now = System.currentTimeMillis()
+        if (now - lastOcrDispatchTimestamp < OCR_THROTTLE_MS) {
+            return
+        }
+        if (!ocrInFlight.compareAndSet(false, true)) {
+            return
+        }
+
+        lastOcrDispatchTimestamp = now
+
+        val copiedBuffer = duplicateDirectBuffer(yPlane)
+        ocrExecutor.execute {
+            try {
+                val ocrStart = System.currentTimeMillis()
+                val resultJson = try {
+                    OpenCVBridge.runOcrOnGrayFrame(
+                        yPlane = copiedBuffer,
+                        yRowStride = yRowStride,
+                        width = width,
+                        height = height,
+                        rotationDegrees = rotationDegrees,
+                        modelDir = ocrModelDir.absolutePath
+                    )
+                } catch (e: Throwable) {
+                    Log.e(TAG, "OCR 執行失敗", e)
+                    buildOcrErrorJson(e.message ?: "unknown error")
+                }
+                val ocrElapsed = System.currentTimeMillis() - ocrStart
+
+                runOnUiThread {
+                    binding.textOcrResult.text = formatOcrSummary(resultJson, ocrElapsed)
+                }
+            } finally {
+                ocrInFlight.set(false)
+            }
+        }
+    }
+
+    private fun duplicateDirectBuffer(source: ByteBuffer): ByteBuffer {
+        val duplicate = source.duplicate()
+        duplicate.rewind()
+        val copy = ByteBuffer.allocateDirect(duplicate.remaining())
+        copy.put(duplicate)
+        copy.flip()
+        return copy
+    }
+
+    private fun syncOcrAssetsToPrivateDir() {
+        val assetRoot = "ocr"
+        val assetNames = runCatching { assets.list(assetRoot) }.getOrNull().orEmpty()
+        if (assetNames.isEmpty()) {
+            Log.w(TAG, "assets/ocr 尚未放入模型檔，OCR 會以缺檔狀態啟動。")
+            return
+        }
+
+        val expectedNames = setOf("text_detection.onnx", "text_recognition.onnx", "charset.txt")
+        val copyTargets = assetNames
+            .filterNot { it.startsWith(".") }
+            .filter { it in expectedNames }
+
+        if (copyTargets.isEmpty()) {
+            Log.w(TAG, "assets/ocr 目前只有占位檔，尚未提供可用模型。")
+            return
+        }
+
+        copyTargets
+            .forEach { name ->
+                val target = File(ocrModelDir, name)
+                if (target.exists() && target.length() > 0L) {
+                    return@forEach
+                }
+                assets.open("$assetRoot/$name").use { input ->
+                    target.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            }
+
+        Log.i(TAG, "OCR assets 已同步至: ${ocrModelDir.absolutePath}")
+    }
+
+    private fun formatOcrSummary(resultJson: String, ocrElapsedMs: Long): String {
+        return try {
+            val root = JSONObject(resultJson)
+            val status = root.optString("status", "unknown")
+            val message = root.optString("message", "")
+            val candidateCount = root.optInt("candidateCount", 0)
+            val acceptedCount = root.optInt("acceptedCount", 0)
+            val results = root.optJSONArray("results") ?: JSONArray()
+
+            val lines = mutableListOf<String>()
+            lines += "OCR: $status | candidates=$candidateCount accepted=$acceptedCount | ${ocrElapsedMs}ms"
+            if (message.isNotBlank()) {
+                lines += message
+            }
+            if (results.length() == 0) {
+                lines += "目前沒有可顯示的辨識文字"
+            } else {
+                val maxLines = minOf(results.length(), 3)
+                for (index in 0 until maxLines) {
+                    val item = results.getJSONObject(index)
+                    val text = item.optString("text", "")
+                    val confidence = item.optDouble("detectionConfidence", Double.NaN)
+                    val rect = Rect(
+                        item.optInt("x", 0),
+                        item.optInt("y", 0),
+                        item.optInt("x", 0) + item.optInt("w", 0),
+                        item.optInt("y", 0) + item.optInt("h", 0)
+                    )
+                    val confText = if (confidence.isNaN()) "n/a" else String.format(Locale.US, "%.2f", confidence)
+                    lines += "#${index + 1} $text (conf=$confText) [${rect.left},${rect.top},${rect.width()}x${rect.height()}]"
+                }
+            }
+            lines.joinToString("\n")
+        } catch (e: JSONException) {
+            Log.e(TAG, "OCR JSON 解析失敗", e)
+            "OCR 回傳格式錯誤: ${e.message}\n$resultJson"
+        }
+    }
+
+    private fun buildOcrErrorJson(message: String): String {
+        return JSONObject()
+            .put("status", "error")
+            .put("message", message)
+            .put("candidateCount", 0)
+            .put("acceptedCount", 0)
+            .put("results", JSONArray())
+            .toString()
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
@@ -169,11 +338,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
-        private const val REQUEST_CODE_PERMISSIONS = 10
-        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+        ocrExecutor.shutdown()
     }
 }

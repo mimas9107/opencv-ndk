@@ -30,6 +30,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # 5. 連結所需要的 Android 系統日誌庫 (log) 與 OpenCV 庫
+#    OpenCV_LIBS 由安裝包提供，已包含 opencv_dnn。
 target_link_libraries(${PROJECT_NAME}
         ${OpenCV_LIBS}
         log

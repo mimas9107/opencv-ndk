@@ -36,4 +36,23 @@ object OpenCVBridge {
         rotationDegrees: Int,
         outBitmap: Bitmap
     )
+
+    /**
+     * 在 native 層執行 OCR，回傳 JSON 格式結果字串。
+     *
+     * @param yPlane      CameraX 的 Y 通道 ByteBuffer
+     * @param yRowStride  Y 的 Row Stride
+     * @param width       影像原始寬度
+     * @param height      影像原始高度
+     * @param rotationDegrees 影像旋轉角度 (0, 90, 180, 270)
+     * @param modelDir    app 私有目錄中的 OCR 模型路徑
+     */
+    external fun runOcrOnGrayFrame(
+        yPlane: ByteBuffer,
+        yRowStride: Int,
+        width: Int,
+        height: Int,
+        rotationDegrees: Int,
+        modelDir: String
+    ): String
 }
