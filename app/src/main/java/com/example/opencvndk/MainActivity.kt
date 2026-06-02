@@ -88,22 +88,28 @@ class MainActivity : AppCompatActivity() {
     private fun processImageFrame(image: ImageProxy) {
         val startTime = System.currentTimeMillis()
 
-        // 1. 初始化輸出 Bitmap (僅在尺寸變更或首次載入時建立，防止記憶體碎片化)
+        // 1. 獲取相機幀偏轉角
+        val rotationDegrees = image.imageInfo.rotationDegrees
+
+        // 2. 依據旋轉角度，決定輸出點陣圖 (Bitmap) 的寬與高
+        // 若偏轉為 90 或 270 度，目標點陣圖的寬度與高度需要對調
         val width = image.width
         val height = image.height
+        val targetWidth = if (rotationDegrees == 90 || rotationDegrees == 270) height else width
+        val targetHeight = if (rotationDegrees == 90 || rotationDegrees == 270) width else height
 
-        if (outputBitmap == null || outputBitmap!!.width != width || outputBitmap!!.height != height) {
-            outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            Log.d(TAG, "建立輸出點陣圖尺寸: ${width}x${height}")
+        if (outputBitmap == null || outputBitmap!!.width != targetWidth || outputBitmap!!.height != targetHeight) {
+            outputBitmap = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888)
+            Log.d(TAG, "建立輸出點陣圖尺寸 (適配旋轉 ${rotationDegrees}°): ${targetWidth}x${targetHeight}")
         }
 
-        // 2. 獲取 YUV 圖像通道
+        // 3. 獲取 YUV 圖像通道
         val planes = image.planes
         val yPlane = planes[0].buffer
         val uPlane = planes[1].buffer
         val vPlane = planes[2].buffer
 
-        // 3. 呼叫 NDK/OpenCV 進行灰階化處理
+        // 4. 呼叫 NDK/OpenCV 進行旋轉與灰階化處理
         outputBitmap?.let { bitmap ->
             OpenCVBridge.processFrameToGray(
                 yPlane = yPlane,
@@ -114,6 +120,7 @@ class MainActivity : AppCompatActivity() {
                 uvPixelStride = planes[1].pixelStride,
                 width = width,
                 height = height,
+                rotationDegrees = rotationDegrees,
                 outBitmap = bitmap
             )
 

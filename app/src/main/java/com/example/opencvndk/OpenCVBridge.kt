@@ -19,8 +19,9 @@ object OpenCVBridge {
      * @param yRowStride  Y 的 Row Stride
      * @param uvRowStride UV 的 Row Stride
      * @param uvPixelStride UV 的 Pixel Stride
-     * @param width       影像寬度
-     * @param height      影像高度
+     * @param width       影像原始寬度
+     * @param height      影像原始高度
+     * @param rotationDegrees 影像旋轉角度 (0, 90, 180, 270)
      * @param outBitmap   接收處理結果的 ARGB_8888 格式 Bitmap
      */
     external fun processFrameToGray(
@@ -32,6 +33,7 @@ object OpenCVBridge {
         uvPixelStride: Int,
         width: Int,
         height: Int,
+        rotationDegrees: Int,
         outBitmap: Bitmap
     )
 }

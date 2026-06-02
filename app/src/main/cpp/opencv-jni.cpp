@@ -24,6 +24,7 @@ extern "C" {
  * @param uv_pixel_stride UV 平面的 Pixel Stride (通常 NV21/YV12 格式下為 1 或 2)
  * @param width        影像寬度
  * @param height       影像高度
+ * @param rotation_degrees 旋轉角度 (0, 90, 180, 270)
  * @param out_bitmap   用於顯示的 Android Bitmap 物件 (應為 ARGB_8888 格式)
  */
 JNIEXPORT void JNICALL
@@ -38,6 +39,7 @@ Java_com_example_opencvndk_OpenCVBridge_processFrameToGray(
         jint uv_pixel_stride,
         jint width,
         jint height,
+        jint rotation_degrees,
         jobject out_bitmap) {
 
     // 1. 取得 Direct ByteBuffer 的指標
@@ -70,18 +72,26 @@ Java_com_example_opencvndk_OpenCVBridge_processFrameToGray(
     }
 
     try {
-        // 3. 建立 OpenCV 矩陣結構
-        // 為了效能，我們只讀取 Y 通道 (亮度)。因為「灰階影像」只需要 Y 通道即可！
-        // 這能夠省去複雜的 YUV420 完整顏色轉換開銷，達到極致的處理速度！
+        // 3. 建立 OpenCV 矩陣結構 (Y 單通道)
         cv::Mat mat_y(height, width, CV_8UC1);
 
-        // 將 Y 平面的數據逐行拷貝至 cv::Mat (考慮到 rowStride 不一定等於 width 的情況)
+        // 將 Y 平面的數據逐行拷貝至 cv::Mat
         for (int i = 0; i < height; ++i) {
             memcpy(mat_y.ptr<uint8_t>(i), y_data + (i * y_row_stride), width);
         }
 
-        // 4. 為了輸出到 RGBA_8888 格式的 Bitmap，我們需要將單通道的灰階 mat_y 轉為 4 通道的 RGBA
-        cv::Mat mat_rgba(height, width, CV_8UC4, bitmap_pixels);
+        // 4. 根據旋轉角度，使用 OpenCV 高效對矩陣進行旋轉修正
+        if (rotation_degrees == 90) {
+            cv::rotate(mat_y, mat_y, cv::ROTATE_90_CLOCKWISE);
+        } else if (rotation_degrees == 180) {
+            cv::rotate(mat_y, mat_y, cv::ROTATE_180);
+        } else if (rotation_degrees == 270) {
+            cv::rotate(mat_y, mat_y, cv::ROTATE_90_COUNTERCLOCKWISE);
+        }
+
+        // 5. 為了輸出到 RGBA_8888 格式，將單通道灰階影像轉為 4 通道 RGBA
+        // 這裡的寬高必須使用旋轉修正後的維度 (mat_y.cols 與 mat_y.rows)
+        cv::Mat mat_rgba(mat_y.rows, mat_y.cols, CV_8UC4, bitmap_pixels);
         cv::cvtColor(mat_y, mat_rgba, cv::COLOR_GRAY2RGBA);
 
     } catch (const cv::Exception &e) {
@@ -90,7 +100,7 @@ Java_com_example_opencvndk_OpenCVBridge_processFrameToGray(
         LOGE("處理影像幀時發生未知異常！");
     }
 
-    // 5. 釋放並解鎖 Bitmap 指標
+    // 6. 釋放並解鎖 Bitmap 指標
     AndroidBitmap_unlockPixels(env, out_bitmap);
 }
 
