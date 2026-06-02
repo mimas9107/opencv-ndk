@@ -1,1 +1,0 @@
-/usr/local/home/mimas/project/opencv-ndk/app/src/main/cpp/CMakeLists.txt

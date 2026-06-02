@@ -1,2 +1,40 @@
+# Gradle / Android build outputs
+.gradle/
 build/
+**/build/
+
+# Android native build outputs
+.cxx/
+**/.cxx/
+.externalNativeBuild/
+**/.externalNativeBuild/
+
+# Local machine configuration
+local.properties
+
+# IDE / editor metadata
+.idea/
+*.iml
+.vscode/
+
+# Generated binaries and packages
+*.apk
+*.aab
+*.ap_
+*.dex
 *.so
+
+# CMake / Ninja generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+build.ninja
+.ninja_deps
+.ninja_log
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

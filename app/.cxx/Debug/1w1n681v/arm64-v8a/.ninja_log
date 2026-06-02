@@ -1,5 +1,0 @@
-# ninja log v6
-6	3789	1780381202185664395	CMakeFiles/opencvndk.dir/opencv-jni.cpp.o	df2c9b940a0b85b2
-6	91	1780381248477666121	/usr/local/home/mimas/project/opencv-ndk/app/build/intermediates/cxx/Debug/1w1n681v/obj/arm64-v8a/libopencvndk.so	5c95ae58659bc39c
-8	3601	1780381738789684406	CMakeFiles/opencvndk.dir/opencv-jni.cpp.o	df2c9b940a0b85b2
-3601	3663	1780381742381684540	/usr/local/home/mimas/project/opencv-ndk/app/build/intermediates/cxx/Debug/1w1n681v/obj/arm64-v8a/libopencvndk.so	5c95ae58659bc39c
