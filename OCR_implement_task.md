@@ -112,7 +112,7 @@
 
 - [x] 確認加入 OCR 後，原本灰階 preview 仍正常顯示
 - [x] 確認加入 OCR 後，旋轉修正仍正常
-- [ ] 確認加入 OCR 後，相機權限流程不受影響
+- [-] 確認加入 OCR 後，相機權限流程不受影響
 - [x] 完成後 preview 與 OCR 彼此可獨立觀察
 
 ## Phase 4 - Verification and Tuning
