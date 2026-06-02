@@ -1,0 +1,9 @@
+<resources>
+    <!-- 基礎無標題列暗色系主題 -->
+    <style name="Theme.App.NoActionBar" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#6200EE</item>
+        <item name="colorPrimaryDark">#3700B3</item>
+        <item name="colorAccent">#03DAC5</item>
+        <item name="android:statusBarColor">#121212</item>
+    </style>
+</resources>

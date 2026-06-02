@@ -114,7 +114,30 @@ opencv-ndk/
 
 ## 8. 待辦與未決事項 (TODO)
 
-- [ ] 選定第一個核心 MVP 功能。
+- [x] 選定第一個核心 MVP 功能。 -> **已決定採用「選項 D：即時相機灰階影像預覽」**。
+- [ ] 建立 Android 專案架構 (app/)。
+- [ ] 整合 OpenCV 交叉編譯產出的 `.so` 庫。
+- [ ] 基於 Jetpack CameraX 實現相機框架，並透過 JNI 將圖像幀（YUV_420_888）傳送至 C++ 層。
+- [ ] C++ 層利用 OpenCV `imgproc` 將圖像轉換為灰階 (Grayscale) 並渲染回畫面。
 - [ ] 評估採用封裝好的 AAR 形式，還是直接引用獨立 `.so` 檔。
-- [ ] 確認是否需要使用 opencv_contrib 擴充模組。
+- [ ] 確認是否需要使用 opencv_contrib 擴充模組。（初期 MVP 不需使用）。
 - [ ] 制定華為 EMUI 系統限制（例如無內建 Google Play 服務）的應對機制。
+
+---
+
+## 9. 「選項 D：即時相機灰階影像預覽」架構規格
+
+### 9.1 技術組成
+- **前端畫面**: Android Jetpack Compose 或傳統 XML View，以最簡化 UI 呈現相機畫面。
+- **相機框架**: `androidx.camera:camera-core`、`camera-camera2`、`camera-lifecycle` (CameraX)。
+- **影像處理**: CameraX `ImageAnalysis.Analyzer` 介面獲取影像幀 `ImageProxy`。
+- **JNI 數據交換**: 提取 `ImageProxy` 中的 Y 通道與 UV 通道 ByteBuffers 直接傳遞至 C++，避免整張點陣圖在 Java 複製產生的記憶體與效能開銷。
+- **C++ 圖像變換**: 
+  ```cpp
+  // C++ JNI 範例邏輯
+  cv::Mat yuv(height + height/2, width, CV_8UC1, pYUVData);
+  cv::Mat gray;
+  cv::cvtColor(yuv, gray, cv::COLOR_YUV2GRAY_NV21);
+  ```
+- **渲染機制**: 將灰階後的影像以 `Bitmap` 格式直接更新至畫面的 ImageView，或透過 ANativeWindow 直接在 C++ 渲染至 Surface。
+
