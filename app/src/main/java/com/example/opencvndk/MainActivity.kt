@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private companion object {
         private const val TAG = "MainActivity"
         private const val REQUEST_CODE_PERMISSIONS = 10
-        private const val OCR_THROTTLE_MS = 400L
+        private const val OCR_THROTTLE_MS = 300L
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
 
