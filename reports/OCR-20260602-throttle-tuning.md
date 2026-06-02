@@ -27,3 +27,8 @@ description: "根據實機 OCR log 與辨識穩定度，調整 OCR dispatch thro
 - preview 與 OCR 解耦不應受影響
 - 若後續觀察到 CPU 或延遲壓力，再考慮回調到更保守值
 
+## 調整後回歸
+
+- 已在 P30 Pro 上重新測試 App
+- 測試結果：沒有觀察到特別問題
+- 目前維持 `300ms` 節流設定
