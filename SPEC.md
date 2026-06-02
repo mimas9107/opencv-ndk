@@ -73,17 +73,16 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
   目標裝置：華為 P30 Pro (Android 12)
 ```
 
-### 5.1 建置流程（規劃中）
+### 5.1 階段性建置流程
 
-1. 執行 `scripts/build_opencv_android.sh` — 進行 cmake 配置與建置：
-   - `-DANDROID_ABI=arm64-v8a`
-   - `-DANDROID_NATIVE_API_LEVEL=26`
-   - `-DOPENCV_EXTRA_MODULES_PATH=<contrib>/modules`
-   - `-DBUILD_ANDROID_EXAMPLES=OFF`
-   - `-DBUILD_TESTS=OFF`
-2. 將編譯出的 `.so` 檔案複製至 `app/src/main/jniLibs/arm64-v8a/`
-3. 實作 JNI 橋接層 (C++ ↔ Kotlin/Java)
-4. 使用 `adb install` 將應用程式部署至裝置上
+本專案採用拆解式的階段性建置機制，以便於各階段獨立調試與故障排除：
+
+1. **環境初始化**: 載入 `scripts/01_init_env.sh` 設定 `JAVA_HOME` (JDK 21) 與 NDK 參數。
+2. **CMake 配置**: 執行 `scripts/02_cmake_configure.sh` 進行 NDK 交叉編譯參數檢查並生成 Ninja 建置檔。
+3. **編譯源碼**: 執行 `scripts/03_compile.sh` 使用 Ninja 多線程高速編譯 C++ 原始碼。
+4. **本機安裝**: 執行 `scripts/04_install.sh` 將編譯好的 `.so` 動態庫與標頭檔封裝至安裝輸出目錄。
+5. **專案部署**: 執行 `scripts/05_deploy_to_app.sh` 將生成的相依連結庫自動拷貝至 App 專案的 `jniLibs` 中。
+6. **一鍵串聯**: 另有主控指令稿 `scripts/run_all_stages.sh` 可一鍵完整執行上述 02 至 05 的所有程序。
 
 ---
 
@@ -91,14 +90,20 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 
 ```
 opencv-ndk/
-├── scripts/            # 建置相關腳本
-│   └── build_opencv_android.sh
-├── app/                # Android 專案目錄
+├── scripts/            # 階段性建置腳本目錄
+│   ├── 01_init_env.sh          # 階段 1 - 環境變數定義
+│   ├── 02_cmake_configure.sh   # 階段 2 - CMake 交叉編譯配置
+│   ├── 03_compile.sh           # 階段 3 - Ninja 多線程編譯
+│   ├── 04_install.sh           # 階段 4 - 本機標頭檔與庫封裝
+│   ├── 05_deploy_to_app.sh     # 階段 5 - 庫部署至 Android app/
+│   ├── run_all_stages.sh       # 一鍵主控執行指令稿
+│   └── build_opencv_android.sh  # 備份參考 (原一大包腳本)
+├── app/                # Android 應用程式專案
 │   └── src/main/
-│       ├── cpp/        # JNI / C++ 包裝層代碼
-│       └── jniLibs/    # 已建置完成的 .so 庫檔案
+│       ├── cpp/        # JNI / C++ 包裝層代碼 (opencv-jni.cpp, CMakeLists.txt)
+│       └── jniLibs/    # 已部署完成的 OpenCV .so 庫檔案 (arm64-v8a)
 ├── docs/               # 設計備忘與研究文獻
-├── reports/            # 測試報告 (TEST-YYYYMMDD.md)
+├── reports/            # 測試報告與變更回報 (TEST-YYYYMMDD.md)
 └── build/              # CMake 獨立建置輸出目錄 (已加入 gitignore)
 ```
 

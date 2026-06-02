@@ -52,11 +52,16 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 - 華為 EMUI v12 系統缺乏 Google Play 框架，將採用 ADB 直接側載 APK 的方式進行部署測試。
 - 初期的 MVP 核心功能預計將**不需要**使用 opencv_contrib 擴充模組，先以 OpenCV 的基本模組完成。
 
+- **建置腳本模組化拆解**: 為了提高 OpenCV 編譯的可除錯性（Troubleshooting），避免「大一統」腳本出錯時無從下手的困局，我們做出重大架構拆解：
+  - 將建置流切分為 5 個明確的獨立階段階段腳本 (`01_init_env.sh` 至 `05_deploy_to_app.sh`)，分別主導環境、配置、編譯、安裝與 App 部署。
+  - 保留原始 `build_opencv_android.sh` 作為設計對照。
+  - 實作 `run_all_stages.sh` 用於整合一鍵執行，大幅提升了整個專案 NDK 建置環節的穩健性。
+
 ### 3. 下一步行動計畫
 
-1. 確定第一個核心 MVP 功能項目（請參見 [SPEC.md 規格書 §4](file:///home/mimas/project/opencv-ndk/SPEC.md#L48)）。
-2. 在 `scripts/build_opencv_android.sh` 中撰寫交叉編譯腳本。
-3. 執行建置並透過 ADB 安裝至實機上進行驗證。
+1. **已完成**：選定核心 MVP 「選項 D：即時相機灰階影像預覽」，並克服相機偏轉角（左旋 90°）與 `jnigraphics` 資源連結等問題，順利產出調試 APK。
+2. **已完成**：將原本龐大的建置腳本重構並拆解為 5 個階段性控制指令稿與 1 個一鍵串聯指令稿，並成功通過快取增量建置驗證。
+3. 準備開始下一核心 MVP（例如人臉辨識或 QR Code 讀取）或進入專案的程式碼重構階段。
 
 ---
 
