@@ -288,12 +288,28 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
 
     std::ostringstream resultsJson;
     resultsJson << "[";
+    std::size_t usableCount = 0;
     for (std::size_t i = 0; i < acceptedRois.size(); ++i) {
         const cv::Rect& rect = acceptedRois[i];
         const std::string text = i < recognizedTexts.size() ? recognizedTexts[i] : "";
         const float detectionConfidence = acceptedIndices[i] < confidences.size()
                                                ? confidences[acceptedIndices[i]]
                                                : -1.0f;
+        const bool usable = !text.empty();
+
+        if (usable) {
+            ++usableCount;
+        }
+
+        LOGI("OCR 辨識結果 #%zu: text=\"%s\" conf=%.3f rect=(%d,%d,%d,%d) usable=%s",
+             acceptedIndices[i],
+             text.c_str(),
+             detectionConfidence,
+             rect.x,
+             rect.y,
+             rect.width,
+             rect.height,
+             usable ? "true" : "false");
 
         if (i > 0) {
             resultsJson << ",";
@@ -302,7 +318,7 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
         resultsJson << "\"index\":" << acceptedIndices[i] << ",";
         resultsJson << "\"text\":\"" << jsonEscape(text) << "\",";
         resultsJson << "\"detectionConfidence\":" << detectionConfidence << ",";
-        resultsJson << "\"usable\":" << (text.empty() ? "false" : "true") << ",";
+        resultsJson << "\"usable\":" << (usable ? "true" : "false") << ",";
         resultsJson << "\"x\":" << rect.x << ",";
         resultsJson << "\"y\":" << rect.y << ",";
         resultsJson << "\"w\":" << rect.width << ",";
@@ -310,6 +326,11 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
         resultsJson << "}";
     }
     resultsJson << "]";
+
+    LOGI("OCR 辨識摘要: candidate=%zu accepted=%zu usable=%zu",
+         detections.size(),
+         acceptedRois.size(),
+         usableCount);
 
     return makeJsonStatus(
         "ok",
