@@ -1,6 +1,7 @@
 # opencv-ndk
 
 ## Project info.
+- Documents language: Traditional Chinese.
 - Porting the favorite opencv lib. onto android environment for my self-host service on my android cellphone.
 - Official repo. is cloned and located in /usr/local/home/mimas/myvenv01/opencv/opencv, and /usr/local/home/mimas/myvenv01/opencv/opencv-contrib
 - MVP small project for 1~3 functions are preferred first. And then colloborate them into vercetile Applications.

@@ -1,0 +1,3 @@
+/usr/local/home/mimas/project/opencv-ndk/app/.cxx/Debug/1w1n681v/arm64-v8a/CMakeFiles/opencvndk.dir
+/usr/local/home/mimas/project/opencv-ndk/app/.cxx/Debug/1w1n681v/arm64-v8a/CMakeFiles/edit_cache.dir
+/usr/local/home/mimas/project/opencv-ndk/app/.cxx/Debug/1w1n681v/arm64-v8a/CMakeFiles/rebuild_cache.dir
