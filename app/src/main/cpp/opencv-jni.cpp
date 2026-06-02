@@ -22,8 +22,8 @@
 
 namespace {
 
-constexpr int kMinOcrWidth = 32;
-constexpr int kMinOcrHeight = 32;
+constexpr int kMinOcrWidth = 64;
+constexpr int kMinOcrHeight = 64;
 constexpr int kMaxOcrWidth = 256;
 constexpr int kMaxOcrHeight = 256;
 

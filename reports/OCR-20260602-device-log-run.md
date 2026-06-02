@@ -22,6 +22,7 @@ description: "P30 Pro 上傳後的首輪 logcat 驗證摘要"
 - 主結果: UI 可穩定顯示 `#1 logitech (conf=0.99)`
 - 輔助結果: logcat 可看到同一文字場景下重複輸出 `logitech`
 - 限制: 偶爾會有次要小框被辨識成單字元 `t`，這屬於場景噪音與候選框多樣性，不影響主結果確認
+- 後續已將 ROI gate 尺寸門檻調整為 `64x64`，優先抑制這類次要小框誤判
 
 ## 結論摘要
 
@@ -32,6 +33,7 @@ description: "P30 Pro 上傳後的首輪 logcat 驗證摘要"
 - 這份新的證據比先前的 `/tmp/log-opencv-ocr.txt` 更完整，能直接證明 detection 與尺寸 gate 已在裝置上運作
 - 裝置 UI 已成功顯示辨識結果 `#1 logitech (conf=0.99)`
 - 因此 `4.1` 的最低驗證目標已達成，後續只剩 preview 保護與門檻調整的收斂工作
+- 其中 `4.2` 的第一項已根據實機結果完成初步調整
 
 ## 觀察到的關鍵訊號
 
@@ -43,6 +45,8 @@ description: "P30 Pro 上傳後的首輪 logcat 驗證摘要"
 - `OpenCV-NDK-JNI: OCR 候選框 #... 放行`
 - `OpenCV-NDK-JNI: OCR 候選框 #... 被略過: 太小`
 - UI 顯示 `#1 logitech (conf=0.99)`
+- `OCR 辨識結果 #0: text="logitech" conf=0.994 rect=(216,395,190,69) usable=true`
+- `OCR 辨識摘要: candidate=2 accepted=1 usable=1`
 
 ## 補充 logcat 片段
 
