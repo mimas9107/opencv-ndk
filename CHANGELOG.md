@@ -2,10 +2,10 @@
 name:            "CHANGELOG.md"
 description:     "opencv-ndk 專案變更歷史紀錄"
 created_date:    "2026/06/02 13:29:51"
-modified_date:   "2026/06/02 13:41:00"
-project_version: "0.1.0"
-document_version: "1.0.1"
-agent_sign:      ['human/mimas', 'antigravity/Antigravity']
+modified_date:   "2026/06/02 17:41:22"
+project_version: "0.2.0"
+document_version: "1.1.0"
+agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 ---
 
 # 變更歷史紀錄 (CHANGELOG)
@@ -16,15 +16,34 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 
 ---
 
+## [0.2.0] — 2026-06-02
+
+### Added
+- 完成 OCR MVP 第一輪驗證，採用 `PP-OCRv3 Text Detection` + `CRNN_CN`。
+- 新增 OCR native pipeline：模型載入、文字偵測、ROI gate、文字辨識、JSON 回傳與 logcat 驗證輸出。
+- 新增 OCR UI 顯示欄位，能在 P30 Pro 上顯示 `logitech (conf=0.99)`。
+- 新增 OCR assets 下載、驗證、debug APK 建置腳本。
+- 新增 OCR 實機驗證、preview protection、permission flow、ROI gate、throttle、deployment rollback 等 reports。
+- 新增 `.gitignore` 規則，排除 Gradle / CMake / Android build generated files，並將既有 generated/local files 從 Git tracking 移除。
+
+### Changed
+- OCR ROI gate 由初始 `32x32` 收斂為 `64x64`，降低小框誤判。
+- OCR dispatch throttle 由 `400ms` 調整為 `300ms`。
+- APK 打包策略維持模型隨 APK 打包並同步至 app 私有目錄；debug APK 約 `105M`，OCR assets 約 `72M`。
+
+### Verified
+- P30 Pro 上完成 app 啟動、相機權限拒絕 / 重授權、灰階 preview、旋轉修正、OCR result 顯示與 logcat 驗證。
+- 調整後回歸測試未觀察到特別問題。
+
 ## [0.1.0] — 2026-06-02
 
 ### Added
 - 專案初始化建置 (AI 代理: Antigravity)
-- [README.md](file:///home/mimas/project/opencv-ndk/README.md) — 提供環境配置資訊與基本目錄結構。
-- [CHANGELOG.md](file:///home/mimas/project/opencv-ndk/CHANGELOG.md) — 建立變更歷史紀錄檔（本檔案）。
-- [SPEC.md](file:///home/mimas/project/opencv-ndk/SPEC.md) — 撰寫設計規格書初版。
-- [MEMOIR.md](file:///home/mimas/project/opencv-ndk/MEMOIR.md) — 撰寫開發備忘錄與決策流程初版。
-- [AGENTS.md](file:///home/mimas/project/opencv-ndk/AGENTS.md) — 導入既有的 AI 代理運作規範。
+- [README.md](file:///usr/local/home/mimas/project/opencv-ndk/README.md) — 提供環境配置資訊與基本目錄結構。
+- [CHANGELOG.md](file:///usr/local/home/mimas/project/opencv-ndk/CHANGELOG.md) — 建立變更歷史紀錄檔（本檔案）。
+- [SPEC.md](file:///usr/local/home/mimas/project/opencv-ndk/SPEC.md) — 撰寫設計規格書初版。
+- [MEMOIR.md](file:///usr/local/home/mimas/project/opencv-ndk/MEMOIR.md) — 撰寫開發備忘錄與決策流程初版。
+- [AGENTS.md](file:///usr/local/home/mimas/project/opencv-ndk/AGENTS.md) — 導入既有的 AI 代理運作規範。
 
 ### Changed
 - 將專案建議與強制使用的 Java 版本統一修正為 **JDK 21**，以確保與 Android 產出工具鏈（如 Gradle）的最佳相容性，並全面更新了 README、SPEC 與 MEMOIR 文件。
@@ -34,7 +53,6 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 ## [未發佈 (Unreleased)]
 
 ### Planned
-- 建立 `scripts/build_opencv_android.sh` 建置腳本，實現 NDK 交叉編譯。
-- 驗證 OpenCV 4.14.0 的 Android AAR 產出與相容性。
-- 選定第一個核心 MVP 功能（人臉偵測 / 邊緣偵測 / QR Code 讀取 其中之一）。
-- 使用 ADB 進行實機部署與驗證。
+- 擴大 OCR 測試樣本，包含更多英文、數字與中文場景。
+- 若繁體中文效果不足，評估替換字庫或模型。
+- 若 release APK 體積需要壓縮，評估模型外部下載或分離部署。

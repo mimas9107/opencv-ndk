@@ -2,10 +2,10 @@
 name:            "SPEC.md"
 description:     "opencv-ndk 設計規格書 — 將 OpenCV 移植至 Android NDK"
 created_date:    "2026/06/02 13:33:16"
-modified_date:   "2026/06/02 13:41:00"
-project_version: "0.1.0"
-document_version: "1.0.1"
-agent_sign:      ['human/mimas', 'antigravity/Antigravity']
+modified_date:   "2026/06/02 17:41:22"
+project_version: "0.2.0"
+document_version: "1.1.0"
+agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 ---
 
 # SPEC — opencv-ndk 設計規格書
@@ -44,16 +44,22 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 
 ---
 
-## 4. MVP 候選功能（待選定）
+## 4. MVP 功能狀態
 
-優先權尚未確定，將由使用者選擇後決定。
+第一輪 MVP 已選定並完成：
 
 | 標號 | 功能名稱 | 使用之 OpenCV 模組 | 實作難易度 |
 |---|---|---|---|
-| A | QR Code 讀取 | `objdetect` | ★☆☆ |
-| B | Canny 邊緣檢測 | `imgproc` | ★☆☆ |
-| C | 人臉偵測 (Haar Cascade) | `objdetect` | ★★☆ |
-| D | 相機影像擷取 + 即時灰階處理 | `videoio`, `imgproc` | ★★☆ |
+| D | 相機影像擷取 + 即時灰階 preview | `imgproc` / CameraX / JNI | 已完成 |
+| E | OCR 文字偵測與辨識 | `dnn` | 已完成第一輪驗證 |
+
+後續可再評估：
+
+| 標號 | 功能名稱 | 使用之 OpenCV 模組 |
+|---|---|---|
+| A | QR Code 讀取 | `objdetect` |
+| B | Canny 邊緣檢測 | `imgproc` |
+| C | 人臉偵測 (Haar Cascade) | `objdetect` |
 
 ---
 
@@ -120,10 +126,11 @@ opencv-ndk/
 ## 8. 待辦與未決事項 (TODO)
 
 - [x] 選定第一個核心 MVP 功能。 -> **已決定採用「選項 D：即時相機灰階影像預覽」**。
-- [ ] 建立 Android 專案架構 (app/)。
-- [ ] 整合 OpenCV 交叉編譯產出的 `.so` 庫。
-- [ ] 基於 Jetpack CameraX 實現相機框架，並透過 JNI 將圖像幀（YUV_420_888）傳送至 C++ 層。
-- [ ] C++ 層利用 OpenCV `imgproc` 將圖像轉換為灰階 (Grayscale) 並渲染回畫面。
+- [x] 建立 Android 專案架構 (app/)。
+- [x] 整合 OpenCV 交叉編譯產出的 `.so` 庫。
+- [x] 基於 Jetpack CameraX 實現相機框架，並透過 JNI 將圖像幀（YUV_420_888）傳送至 C++ 層。
+- [x] C++ 層利用 OpenCV `imgproc` 將圖像轉換為灰階 (Grayscale) 並渲染回畫面。
+- [x] 完成 OCR MVP：文字偵測、ROI gate、文字辨識與 UI 顯示。
 - [ ] 評估採用封裝好的 AAR 形式，還是直接引用獨立 `.so` 檔。
 - [ ] 確認是否需要使用 opencv_contrib 擴充模組。（初期 MVP 不需使用）。
 - [ ] 制定華為 EMUI 系統限制（例如無內建 Google Play 服務）的應對機制。
@@ -146,3 +153,45 @@ opencv-ndk/
   ```
 - **渲染機制**: 將灰階後的影像以 `Bitmap` 格式直接更新至畫面的 ImageView，或透過 ANativeWindow 直接在 C++ 渲染至 Surface。
 
+---
+
+## 10. OCR MVP 架構規格
+
+### 10.1 模型組合
+
+- 文字偵測: `PP-OCRv3 Text Detection`
+- 文字辨識: `CRNN_CN`
+- 模型來源: OpenCV 官方模型生態
+
+### 10.2 資源與部署
+
+- 模型放置於 `app/src/main/assets/ocr/`
+- App 啟動後同步至 app 私有目錄 `filesDir/ocr`
+- Debug APK 約 `105M`
+- OCR assets 約 `72M`
+
+### 10.3 Native Pipeline
+
+```text
+CameraX Y plane
+    -> JNI gray frame
+    -> OpenCV DNN TextDetectionModel_DB
+    -> ROI gate
+    -> OpenCV DNN TextRecognitionModel
+    -> JSON result
+    -> Android UI
+```
+
+### 10.4 第一輪收斂參數
+
+- 最小 ROI: `64x64`
+- 最大 ROI: `256x256`
+- OCR dispatch throttle: `300ms`
+- Preview 與 OCR 使用不同 executor，OCR 不能阻塞 preview
+
+### 10.5 驗證結果
+
+- P30 Pro 實機 app 啟動正常，無 `FATAL EXCEPTION`
+- 相機權限拒絕後重新允許，App 可恢復正常
+- 灰階 preview 與旋轉修正正常
+- OCR UI 已顯示 `logitech (conf=0.99)`

@@ -2,10 +2,10 @@
 name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
-modified_date:   "2026/06/02 13:41:00"
-project_version: "0.1.0"
-document_version: "1.0.1"
-agent_sign:      ['human/mimas', 'antigravity/Antigravity']
+modified_date:   "2026/06/02 17:41:22"
+project_version: "0.2.0"
+document_version: "1.1.0"
+agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 ---
 
 # MEMOIR — 開發備忘錄與學習日誌
@@ -61,7 +61,50 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 
 1. **已完成**：選定核心 MVP 「選項 D：即時相機灰階影像預覽」，並克服相機偏轉角（左旋 90°）與 `jnigraphics` 資源連結等問題，順利產出調試 APK。
 2. **已完成**：將原本龐大的建置腳本重構並拆解為 5 個階段性控制指令稿與 1 個一鍵串聯指令稿，並成功通過快取增量建置驗證。
-3. 準備開始下一核心 MVP（例如人臉辨識或 QR Code 讀取）或進入專案的程式碼重構階段。
+3. **已完成**：OCR MVP 第一輪驗證，包含文字偵測、ROI gate、文字辨識、UI 顯示、logcat 驗證、preview protection 與權限流程回歸。
+4. 下一步可擴大 OCR 場景樣本，或開始下一核心 MVP（例如 QR Code 讀取 / Canny / 人臉偵測）。
+
+---
+
+## 2026-06-02 — OCR MVP 第一輪驗證完成
+
+### 背景描述
+
+在灰階 preview MVP 穩定後，第二條分析管線加入 OCR。目標是先在 P30 Pro 上跑通最小可用流程，而不是一開始追求完整排版理解或大規模中文泛化。
+
+### 實作內容與過程
+
+- 採用 `PP-OCRv3 Text Detection` + `CRNN_CN`。
+- 模型放入 `app/src/main/assets/ocr/`，啟動後同步到 `filesDir/ocr`。
+- Kotlin 端新增 OCR dispatch throttle 與獨立 executor。
+- Native 端建立「偵測 -> ROI gate -> 辨識 -> JSON 回傳」流程。
+- UI 新增 OCR 結果顯示欄位。
+- 下載 / 驗證 / build 腳本固定為：
+  - `scripts/07_download_ocr_models.sh`
+  - `scripts/06_verify_ocr_assets.sh`
+  - `scripts/08_build_app_debug.sh`
+
+### 成果與遭遇問題
+
+- P30 Pro 實機可辨識滑鼠上的 `logitech`，UI 顯示約 `conf=0.99`。
+- logcat 可看到 `OCR 辨識結果 #0: text="logitech"`。
+- 初期出現小框誤判成單字元 `t`，因此先收緊 ROI gate。
+- ROI gate 從 `32x32` 調整為 `64x64`。
+- OCR dispatch throttle 從 `400ms` 調整為 `300ms`。
+- 調整後 app 回歸測試沒有觀察到特別問題。
+
+### 決策備忘
+
+- Debug APK 約 `105M`，OCR assets 約 `72M`。目前作為個人 P30 Pro 測試版可接受。
+- 第一版維持模型隨 APK 打包，不改成外部下載，避免新增部署失敗點。
+- 若後續繁體中文效果不足，再評估字庫或模型替換。
+- 若後續效能壓力變高，優先調高 OCR 節流間隔，不破壞 preview。
+
+### 下一步規劃
+
+1. 擴大 OCR 測試樣本，加入更多英文、數字與中文場景。
+2. 評估 release APK 體積是否需要拆分模型部署。
+3. 根據實際應用需求選擇下一個 OpenCV MVP。
 
 ---
 

@@ -2,10 +2,10 @@
 name:            "README.md"
 description:     "OpenCV NDK 移植專案 — 為 Android (華為 P30 Pro / EMUI 12) 編譯 OpenCV 4.x"
 created_date:    "2026/06/02 13:29:51"
-modified_date:   "2026/06/02 13:41:00"
-project_version: "0.1.0"
-document_version: "1.0.1"
-agent_sign:      ['human/mimas', 'antigravity/Antigravity']
+modified_date:   "2026/06/02 17:41:22"
+project_version: "0.2.0"
+document_version: "1.1.0"
+agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 ---
 
 # opencv-ndk
@@ -16,6 +16,16 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 
 本專案為 MVP（最小可行性產品）專案，旨在針對華為 P30 Pro (Android 12 / EMUI v12) 平台，使用 NDK 編譯 OpenCV 4.x，並將其整合至個人架設的服務中。  
 開發策略為首先實現 1 至 3 個核心功能的 MVP，隨後再逐步擴展至更多元化的應用程式。
+
+## 目前成果
+
+- 已完成即時灰階 preview 與旋轉修正。
+- 已完成 OCR MVP 第一輪驗證。
+- OCR 模型組合：`PP-OCRv3 Text Detection` + `CRNN_CN`。
+- P30 Pro 實機已辨識 `logitech (conf=0.99)`。
+- OCR ROI gate 已調整為最小 `64x64`、最大 `256x256`。
+- OCR dispatch throttle 已調整為 `300ms`。
+- Debug APK 約 `105M`，OCR assets 約 `72M`。
 
 ## 目錄結構（初期）
 
@@ -49,20 +59,33 @@ opencv-ndk/
 | OpenCV 原始碼 | `/usr/local/home/mimas/myvenv01/opencv/opencv` (v4.14.0-pre) |
 | opencv_contrib | `/usr/local/home/mimas/myvenv01/opencv/opencv_contrib` |
 | 目標測試裝置 | 華為 P30 Pro, Android 12, EMUI v12 |
-| 專案根目錄 | `/home/mimas/project/opencv-ndk` |
+| 專案根目錄 | `/usr/local/home/mimas/project/opencv-ndk` |
 
-## 快速上手（規劃中）
+## 快速上手
 
 ```bash
-# 1. 確認 NDK 設定與路徑
-ls ~/Android/Sdk/ndk/30.0.14904198/
+# 1. 下載 OCR 模型
+bash scripts/07_download_ocr_models.sh
 
-# 2. 為 Android 平台編譯 OpenCV（建置指令稿尚未建立）
-# scripts/build_opencv_android.sh
+# 2. 建置 debug APK
+bash scripts/08_build_app_debug.sh
 
-# 3. 透過 ADB 確認裝置連接狀態
+# 3. 確認 APK 內含 OCR assets
+bash scripts/06_verify_ocr_assets.sh
+
+# 4. 透過 ADB 確認裝置連接狀態
 adb devices
+
+# 5. 安裝 APK
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
+
+## OCR 相關文件
+
+- [OCR_implement_plan.md](/usr/local/home/mimas/project/opencv-ndk/OCR_implement_plan.md)
+- [OCR_implement_task.md](/usr/local/home/mimas/project/opencv-ndk/OCR_implement_task.md)
+- [OCR 實機 logcat 驗證紀錄](/usr/local/home/mimas/project/opencv-ndk/reports/OCR-20260602-device-log-run.md)
+- [OCR 部署體積與回退評估](/usr/local/home/mimas/project/opencv-ndk/reports/OCR-20260602-deployment-rollback-assessment.md)
 
 ## 參考連結
 
