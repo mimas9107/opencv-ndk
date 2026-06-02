@@ -27,10 +27,14 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 | ADB | `/usr/bin/adb` — システムパスに存在 |
 | CMake | 3.31.6 (`/usr/bin/cmake`) — システム cmake が十分新しい |
 | Ninja | `/usr/bin/ninja` — 利用可能 |
-| Java | OpenJDK 25.0.3 — Debian 13 標準 |
 | sdkmanager | `~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager` |
 | OpenCV | 4.14.0-pre (master-ish) — `/usr/local/home/mimas/myvenv01/opencv/opencv` |
 | opencv_contrib | 同ディレクトリ配下 `opencv_contrib/` |
+| Java | **JDK 21** を使用 (Gradle 推奨環境。環境変数にて明示指定) |
+
+**Java バージョンの決定プロセス:**
+- システムには JDK 21 (update-alternatives デフォルト) と JDK 25 (現在のシェル環境のデフォルト) の両方が存在。
+- Android Gradle Plugin (AGP) や Android 開発ツールチェーンは最新の JDK 25 には未対応である可能性が高く、ビルドの安定性を最優先するため **JDK 21** (パス: `/usr/lib/jvm/java-21-openjdk-amd64`) を本プロジェクトの標準 JDK として決定した。
 
 **NDK platforms/android/ に既存の設定ファイル:**
 - `ndk-25.config.py`, `ndk-22.config.py` などがある。
@@ -38,6 +42,7 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity']
 
 ### 判断・方針メモ
 
+- **Java 環境の制御**: 今後実装するすべてのビルドスクリプトにおいて、実行前に `export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64` を明示し、意図しない JDK 25 での Gradle 動作を防止する。
 - NDK r30 は API 26+ をサポート。Huawei P30 Pro は Android 12 (API 31) → 問題なし。
 - `build_sdk.py` (platforms/android/) を使う方法と、
   直接 cmake で cross-compile する方法の 2 択がある。

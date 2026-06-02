@@ -41,7 +41,7 @@ OpenCV 4.x を Android NDK でビルドし、Huawei P30 Pro 上で動作する
 | ADB | `/usr/bin/adb` |
 | SDK Manager | `~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager` |
 | Host Python | 3.13.5 (system) |
-| Java | OpenJDK 25.0.3 |
+| Java | OpenJDK 21 (環境変数 JAVA_HOME にて明示指定して使用) |
 
 ---
 

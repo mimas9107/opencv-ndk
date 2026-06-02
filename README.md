@@ -40,7 +40,7 @@ opencv-ndk/
 | Host OS | Debian 13 (Linux 6.12.90+deb13.1) |
 | Desktop | Wayland + Sway WM |
 | Python | 3.13.5 (system-wide) |
-| Java | OpenJDK 25.0.3 |
+| Java | OpenJDK 21 (Gradle 推奨、明示的に指定して使用) |
 | CMake | 3.31.6 |
 | Android NDK | r30 (30.0.14904198) — `~/Android/Sdk/ndk/30.0.14904198` |
 | Android SDK | `~/Android/Sdk` |
