@@ -2,7 +2,7 @@
 
 set -e
 
-PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
+PROJECT_ROOT="/home/mimas/projects/opencv-ndk"
 APK_PATH="${PROJECT_ROOT}/app/build/outputs/apk/debug/app-debug.apk"
 
 echo ">>> 檢查 OCR assets 與 APK 打包結果 <<<"

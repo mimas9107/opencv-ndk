@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
+PROJECT_ROOT="/home/mimas/projects/opencv-ndk"
 OCR_DIR="${PROJECT_ROOT}/app/src/main/assets/ocr"
 
 DETECTION_URL="https://huggingface.co/opencv/text_detection_ppocr/resolve/main/text_detection_cn_ppocrv3_2023may.onnx"

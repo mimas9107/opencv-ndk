@@ -40,7 +40,7 @@ description: "opencv-ndk 專案 OCR MVP 第一階段基礎實作紀錄"
 
 ## 下載來源與腳本
 
-- 下載腳本: [scripts/07_download_ocr_models.sh](/usr/local/home/mimas/project/opencv-ndk/scripts/07_download_ocr_models.sh)
+- 下載腳本: [scripts/07_download_ocr_models.sh](/home/mimas/projects/opencv-ndk/scripts/07_download_ocr_models.sh)
 - 文字偵測來源: `https://huggingface.co/opencv/text_detection_ppocr`
 - 文字辨識來源: `https://huggingface.co/opencv/text_recognition_crnn`
 - 字庫來源: `https://huggingface.co/opencv/text_recognition_crnn` (commit `4fcc8b234f71acb1f88c464aab7c792856ad6365`)
@@ -49,4 +49,4 @@ description: "opencv-ndk 專案 OCR MVP 第一階段基礎實作紀錄"
 
 - Gradle wrapper: `8.5`
 - JAVA_HOME: `/usr/lib/jvm/java-21-openjdk-amd64`
-- 建置腳本: [scripts/08_build_app_debug.sh](/usr/local/home/mimas/project/opencv-ndk/scripts/08_build_app_debug.sh)
+- 建置腳本: [scripts/08_build_app_debug.sh](/home/mimas/projects/opencv-ndk/scripts/08_build_app_debug.sh)

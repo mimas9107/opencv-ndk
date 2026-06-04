@@ -28,7 +28,7 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 | CMake 版本 | 3.31.6 (`/usr/bin/cmake`) — 系統 CMake 版本符合需求 |
 | Ninja 工具 | `/usr/bin/ninja` — 系統已內建並可直接使用 |
 | sdkmanager | `~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager` |
-| OpenCV 原始碼 | 4.14.0-pre (基於 master 分支) — `/usr/local/home/mimas/myvenv01/opencv/opencv` |
+| OpenCV 原始碼 | 4.14.0-pre (基於 master 分支) — `/home/mimas/projects/opencv/opencv` |
 | opencv_contrib | 同目錄下的 `opencv_contrib/` 資料夾 |
 | Java 環境 | **JDK 21** (使用 Gradle 推薦版本，透過環境變數強制指定) |
 

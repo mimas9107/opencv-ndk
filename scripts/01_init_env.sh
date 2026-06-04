@@ -9,10 +9,10 @@ export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 export PATH="${JAVA_HOME}/bin:${PATH}"
 
 # 2. 定義核心專案與原始碼路徑
-export OPENCV_SOURCE_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv"
-export OPENCV_CONTRIB_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv_contrib"
+export OPENCV_SOURCE_DIR="/home/mimas/projects/opencv/opencv"
+export OPENCV_CONTRIB_DIR="/home/mimas/projects/opencv/opencv_contrib"
 export ANDROID_NDK_ROOT="/home/mimas/Android/Sdk/ndk/30.0.14904198"
-export PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
+export PROJECT_ROOT="/home/mimas/projects/opencv-ndk"
 
 # 3. 定義編譯與安裝輸出目錄
 export BUILD_DIR="${PROJECT_ROOT}/build/opencv_android_arm64"

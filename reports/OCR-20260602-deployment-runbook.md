@@ -43,7 +43,7 @@ bash scripts/08_build_app_debug.sh
 ## 3. 覆蓋安裝
 
 ```bash
-adb install -r /usr/local/home/mimas/project/opencv-ndk/app/build/outputs/apk/debug/app-debug.apk
+adb install -r /home/mimas/projects/opencv-ndk/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 預期：

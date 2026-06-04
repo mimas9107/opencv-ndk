@@ -39,11 +39,11 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 
 ### Added
 - 專案初始化建置 (AI 代理: Antigravity)
-- [README.md](file:///usr/local/home/mimas/project/opencv-ndk/README.md) — 提供環境配置資訊與基本目錄結構。
-- [CHANGELOG.md](file:///usr/local/home/mimas/project/opencv-ndk/CHANGELOG.md) — 建立變更歷史紀錄檔（本檔案）。
-- [SPEC.md](file:///usr/local/home/mimas/project/opencv-ndk/SPEC.md) — 撰寫設計規格書初版。
-- [MEMOIR.md](file:///usr/local/home/mimas/project/opencv-ndk/MEMOIR.md) — 撰寫開發備忘錄與決策流程初版。
-- [AGENTS.md](file:///usr/local/home/mimas/project/opencv-ndk/AGENTS.md) — 導入既有的 AI 代理運作規範。
+- [README.md](file:///home/mimas/projects/opencv-ndk/README.md) — 提供環境配置資訊與基本目錄結構。
+- [CHANGELOG.md](file:///home/mimas/projects/opencv-ndk/CHANGELOG.md) — 建立變更歷史紀錄檔（本檔案）。
+- [SPEC.md](file:///home/mimas/projects/opencv-ndk/SPEC.md) — 撰寫設計規格書初版。
+- [MEMOIR.md](file:///home/mimas/projects/opencv-ndk/MEMOIR.md) — 撰寫開發備忘錄與決策流程初版。
+- [AGENTS.md](file:///home/mimas/projects/opencv-ndk/AGENTS.md) — 導入既有的 AI 代理運作規範。
 
 ### Changed
 - 將專案建議與強制使用的 Java 版本統一修正為 **JDK 21**，以確保與 Android 產出工具鏈（如 Gradle）的最佳相容性，並全面更新了 README、SPEC 與 MEMOIR 文件。

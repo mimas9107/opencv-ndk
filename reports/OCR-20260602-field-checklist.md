@@ -56,4 +56,4 @@ OCR:
 
 ## F. 最短版
 
-- 直接看 [OCR 實機快速檢查表](/usr/local/home/mimas/project/opencv-ndk/reports/OCR-20260602-quick-device-checklist.md)
+- 直接看 [OCR 實機快速檢查表](/home/mimas/projects/opencv-ndk/reports/OCR-20260602-quick-device-checklist.md)

@@ -32,8 +32,8 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 
 | 元件名稱 | 版本與路徑資訊 |
 |---------|--------------|
-| OpenCV 原始碼 | 4.14.0-pre — `/usr/local/home/mimas/myvenv01/opencv/opencv` |
-| opencv_contrib | `/usr/local/home/mimas/myvenv01/opencv/opencv_contrib` |
+| OpenCV 原始碼 | 4.14.0-pre — `/home/mimas/projects/opencv/opencv` |
+| opencv_contrib | `/home/mimas/projects/opencv/opencv_contrib` |
 | Android NDK | r30 (30.0.14904198) — `~/Android/Sdk/ndk/30.0.14904198` |
 | CMake | 3.31.6 (`/usr/bin/cmake`) |
 | Ninja | 系統全域 (`/usr/bin/ninja`) |

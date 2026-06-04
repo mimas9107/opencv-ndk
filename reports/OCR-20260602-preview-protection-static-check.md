@@ -8,9 +8,9 @@ description: "確認 OCR 加入後 preview 路徑未被取代，且分析工作�
 
 ## 檢查範圍
 
-- [MainActivity.kt](/usr/local/home/mimas/project/opencv-ndk/app/src/main/java/com/example/opencvndk/MainActivity.kt)
-- [opencv-jni.cpp](/usr/local/home/mimas/project/opencv-ndk/app/src/main/cpp/opencv-jni.cpp)
-- [activity_main.xml](/usr/local/home/mimas/project/opencv-ndk/app/src/main/res/layout/activity_main.xml)
+- [MainActivity.kt](/home/mimas/projects/opencv-ndk/app/src/main/java/com/example/opencvndk/MainActivity.kt)
+- [opencv-jni.cpp](/home/mimas/projects/opencv-ndk/app/src/main/cpp/opencv-jni.cpp)
+- [activity_main.xml](/home/mimas/projects/opencv-ndk/app/src/main/res/layout/activity_main.xml)
 
 ## 靜態結論
 

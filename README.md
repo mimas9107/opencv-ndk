@@ -56,10 +56,10 @@ opencv-ndk/
 | SDK 管理工具 | `~/Android/Sdk/cmdline-tools/latest/bin/sdkmanager` |
 | ADB 工具 | `/usr/bin/adb` |
 | Android Studio | `/opt/android-studio` |
-| OpenCV 原始碼 | `/usr/local/home/mimas/myvenv01/opencv/opencv` (v4.14.0-pre) |
-| opencv_contrib | `/usr/local/home/mimas/myvenv01/opencv/opencv_contrib` |
+| OpenCV 原始碼 | `/home/mimas/projects/opencv/opencv` (v4.14.0-pre) |
+| opencv_contrib | `/home/mimas/projects/opencv/opencv_contrib` |
 | 目標測試裝置 | 華為 P30 Pro, Android 12, EMUI v12 |
-| 專案根目錄 | `/usr/local/home/mimas/project/opencv-ndk` |
+| 專案根目錄 | `/home/mimas/projects/opencv-ndk` |
 
 ## 快速上手
 
@@ -82,13 +82,13 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 ## OCR 相關文件
 
-- [OCR_implement_plan.md](/usr/local/home/mimas/project/opencv-ndk/OCR_implement_plan.md)
-- [OCR_implement_task.md](/usr/local/home/mimas/project/opencv-ndk/OCR_implement_task.md)
-- [OCR 實機 logcat 驗證紀錄](/usr/local/home/mimas/project/opencv-ndk/reports/OCR-20260602-device-log-run.md)
-- [OCR 部署體積與回退評估](/usr/local/home/mimas/project/opencv-ndk/reports/OCR-20260602-deployment-rollback-assessment.md)
+- [OCR_implement_plan.md](/home/mimas/projects/opencv-ndk/OCR_implement_plan.md)
+- [OCR_implement_task.md](/home/mimas/projects/opencv-ndk/OCR_implement_task.md)
+- [OCR 實機 logcat 驗證紀錄](/home/mimas/projects/opencv-ndk/reports/OCR-20260602-device-log-run.md)
+- [OCR 部署體積與回退評估](/home/mimas/projects/opencv-ndk/reports/OCR-20260602-deployment-rollback-assessment.md)
 
 ## 參考連結
 
 - [OpenCV Android SDK 建置指南](https://docs.opencv.org/4.x/d0/d76/tutorial_arm_crosscompile_with_cmake.html)
-- [OpenCV platforms/android/ 原始碼目錄](file:///usr/local/home/mimas/myvenv01/opencv/opencv/platforms/android/)
+- [OpenCV platforms/android/ 原始碼目錄](file:///home/mimas/projects/opencv/opencv/platforms/android/)
 - NDK 設定範例： `ndk-25.config.py` (platforms/android/)

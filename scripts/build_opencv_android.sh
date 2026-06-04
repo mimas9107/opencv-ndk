@@ -12,10 +12,10 @@ export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 export PATH="${JAVA_HOME}/bin:${PATH}"
 
 # 目標與源碼路徑設定
-OPENCV_SOURCE_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv"
-OPENCV_CONTRIB_DIR="/usr/local/home/mimas/myvenv01/opencv/opencv_contrib"
+OPENCV_SOURCE_DIR="/home/mimas/projects/opencv/opencv"
+OPENCV_CONTRIB_DIR="/home/mimas/projects/opencv/opencv_contrib"
 ANDROID_NDK_ROOT="/home/mimas/Android/Sdk/ndk/30.0.14904198"
-PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
+PROJECT_ROOT="/home/mimas/projects/opencv-ndk"
 BUILD_DIR="${PROJECT_ROOT}/build/opencv_android_arm64"
 INSTALL_DIR="${PROJECT_ROOT}/build/opencv_android_install"
 

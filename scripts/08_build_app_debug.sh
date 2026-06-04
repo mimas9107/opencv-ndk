@@ -8,7 +8,7 @@ export PATH="${JAVA_HOME}/bin:${PATH}"
 # 使用本機已存在的 Gradle 8.5 wrapper 分發包快取。
 export GRADLE_USER_HOME="/tmp/codex-gradle"
 
-PROJECT_ROOT="/usr/local/home/mimas/project/opencv-ndk"
+PROJECT_ROOT="/home/mimas/projects/opencv-ndk"
 cd "${PROJECT_ROOT}"
 
 echo ">>> Build env <<<"
