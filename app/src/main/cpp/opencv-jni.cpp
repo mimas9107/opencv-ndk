@@ -231,7 +231,50 @@ bool initOcrRuntime(const std::string& modelDir, std::string& errorMessage) {
     return false;
 }
 
-std::string runOcrPipeline(const cv::Mat& grayFrame) {
+// 簡單的 UTF-8 解碼器，用於過濾特定類別字元
+std::string filterTextByType(const std::string& input, bool useChinese, bool useEnglish, bool useNumbers) {
+    // 若全部開啟，則不進行過濾以確保效能與完整性
+    if (useChinese && useEnglish && useNumbers) return input;
+
+    std::string result;
+    for (size_t i = 0; i < input.length(); ) {
+        unsigned char c = input[i];
+        uint32_t cp = 0;
+        size_t len = 0;
+
+        if (c < 0x80) { cp = c; len = 1; }
+        else if ((c & 0xE0) == 0xC0) { cp = c & 0x1F; len = 2; }
+        else if ((c & 0xF0) == 0xE0) { cp = c & 0x0F; len = 3; }
+        else if ((c & 0xF8) == 0xF0) { cp = c & 0x07; len = 4; }
+        else { i++; continue; }
+
+        if (i + len > input.length()) break;
+
+        for (size_t j = 1; j < len; j++) {
+            cp = (cp << 6) | (static_cast<unsigned char>(input[i + j]) & 0x3F);
+        }
+
+        bool keep = false;
+        if (cp >= '0' && cp <= '9') {
+            if (useNumbers) keep = true;
+        } else if ((cp >= 'A' && cp <= 'Z') || (cp >= 'a' && cp <= 'z')) {
+            if (useEnglish) keep = true;
+        } else if (cp >= 0x4E00 && cp <= 0x9FFF) {
+            if (useChinese) keep = true;
+        } else {
+            // 標點符號與空白：若有啟用任一主要類別，則保留這些輔助字元
+            if (useChinese || useEnglish || useNumbers) keep = true;
+        }
+
+        if (keep) {
+            result.append(input.substr(i, len));
+        }
+        i += len;
+    }
+    return result;
+}
+
+std::string runOcrPipeline(const cv::Mat& grayFrame, bool useChinese, bool useEnglish, bool useNumbers) {
     auto& runtime = ocrRuntime();
 
     // 計算中心 50% ROI (0.5x width, 0.5x height)
@@ -310,7 +353,11 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
         // 映射回原始全圖座標
         const cv::Rect rect(rectInCrop.x + roiX, rectInCrop.y + roiY, rectInCrop.width, rectInCrop.height);
         
-        const std::string text = i < recognizedTexts.size() ? recognizedTexts[i] : "";
+        std::string text = i < recognizedTexts.size() ? recognizedTexts[i] : "";
+        
+        // 應用字符類別過濾
+        text = filterTextByType(text, useChinese, useEnglish, useNumbers);
+
         const float detectionConfidence = acceptedIndices[i] < confidences.size()
                                                ? confidences[acceptedIndices[i]]
                                                : -1.0f;
@@ -320,7 +367,7 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
             ++usableCount;
         }
 
-        LOGI("OCR 辨識結果 #%zu: text=\"%s\" conf=%.3f rect=(%d,%d,%d,%d) usable=%s",
+        LOGI("OCR 辨識結果 #%zu: text=\"%s\" (過濾後) conf=%.3f rect=(%d,%d,%d,%d) usable=%s",
              acceptedIndices[i],
              text.c_str(),
              detectionConfidence,
@@ -428,7 +475,10 @@ Java_com_example_opencvndk_OpenCVBridge_runOcrOnGrayFrame(
         jint width,
         jint height,
         jint rotation_degrees,
-        jstring model_dir) {
+        jstring model_dir,
+        jboolean use_chinese,
+        jboolean use_english,
+        jboolean use_numbers) {
 
     const char *modelDirChars = env->GetStringUTFChars(model_dir, nullptr);
     if (!modelDirChars) {
@@ -453,7 +503,7 @@ Java_com_example_opencvndk_OpenCVBridge_runOcrOnGrayFrame(
 
     try {
         const cv::Mat matY = buildGrayFrameFromYPlane(y_data, y_row_stride, width, height, rotation_degrees);
-        const std::string resultJson = runOcrPipeline(matY);
+        const std::string resultJson = runOcrPipeline(matY, (bool)use_chinese, (bool)use_english, (bool)use_numbers);
         return env->NewStringUTF(resultJson.c_str());
     } catch (const cv::Exception& e) {
         LOGE("OCR pipeline OpenCV 異常: %s", e.what());

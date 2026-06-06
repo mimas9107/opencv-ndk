@@ -47,6 +47,9 @@ class MainActivity : AppCompatActivity() {
     
     // OCR 偵測結果顯示相關
     private val showDetections = AtomicBoolean(false)
+    private val useChinese = AtomicBoolean(true)
+    private val useEnglish = AtomicBoolean(true)
+    private val useNumbers = AtomicBoolean(true)
     private val latestDetections = CopyOnWriteArrayList<Rect>()
     private val detectionPaint = Paint().apply {
         color = Color.CYAN
@@ -79,6 +82,10 @@ class MainActivity : AppCompatActivity() {
                 latestDetections.clear()
             }
         }
+
+        binding.switchChinese.setOnCheckedChangeListener { _, isChecked -> useChinese.set(isChecked) }
+        binding.switchEnglish.setOnCheckedChangeListener { _, isChecked -> useEnglish.set(isChecked) }
+        binding.switchNumbers.setOnCheckedChangeListener { _, isChecked -> useNumbers.set(isChecked) }
 
         // 檢查並請求相機權限
         if (allPermissionsGranted()) {
@@ -238,7 +245,10 @@ class MainActivity : AppCompatActivity() {
                         width = width,
                         height = height,
                         rotationDegrees = rotationDegrees,
-                        modelDir = ocrModelDir.absolutePath
+                        modelDir = ocrModelDir.absolutePath,
+                        useChinese = useChinese.get(),
+                        useEnglish = useEnglish.get(),
+                        useNumbers = useNumbers.get()
                     )
                 } catch (e: Throwable) {
                     Log.e(TAG, "OCR 執行失敗", e)

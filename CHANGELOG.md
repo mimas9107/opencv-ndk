@@ -3,8 +3,8 @@ name:            "CHANGELOG.md"
 description:     "opencv-ndk 專案變更歷史紀錄"
 created_date:    "2026/06/02 13:29:51"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.3"
-document_version: "1.4.0"
+project_version: "0.2.4"
+document_version: "1.5.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -15,6 +15,16 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 版本號遞增遵循 10 進位原則（當 PATCH/MINOR 滿 10 時進位）。
 
 ---
+
+## [0.2.4] — 2026-06-06
+
+### Added
+- 新增 OCR 字符類別過濾功能：可透過 UI 切換是否保留「中文」、「英文」或「數字」辨識結果。
+- 實作 Native 層 UTF-8 字符類別過濾器，降低傳輸與顯示無用資訊的開銷。
+
+### Changed
+- 更新 `activity_main.xml`：新增三個 `SwitchCompat` 用於類別過濾控制。
+- 更新 `OpenCVBridge.kt` 與 `opencv-jni.cpp`：擴充 JNI 介面以支援傳遞過濾旗標。
 
 ## [0.2.3] — 2026-06-06
 

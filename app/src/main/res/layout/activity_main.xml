@@ -40,14 +40,57 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:background="#80000000"
         android:padding="8dp"
-        android:text="顯示偵測外框 (Conf ≥ 0.96)"
+        android:text="顯示偵測框"
         android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/text_ocr_result"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/layout_ocr_filters"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- OCR 字符過濾開關 -->
+    <LinearLayout
+        android:id="@+id/layout_ocr_filters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="#80000000"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_ocr_result"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_chinese"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="中"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_english"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:checked="true"
+            android:text="英"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_numbers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:checked="true"
+            android:text="數"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <!-- OCR 最近一次辨識結果 -->
     <TextView

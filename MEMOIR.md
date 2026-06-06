@@ -3,8 +3,8 @@ name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.3"
-document_version: "1.4.0"
+project_version: "0.2.4"
+document_version: "1.5.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -180,6 +180,31 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 
 1. 觀察在多個偵測目標同時出現時，點位顯示的清晰度。
 2. 考慮是否需要根據信心值調整點的大小。
+
+---
+
+## 2026-06-06 — 字符類別過濾 (v0.2.4)
+
+### 背景描述
+
+為了讓使用者能專注於特定的資訊（如純數字或純中文），需要提供過濾功能以隱藏不感興趣的辨識結果。
+
+### 實作內容與過程
+
+- **UI 調整**：在 `activity_main.xml` 加入「中、英、數」三個開關。
+- **JNI 介面升級**：修改 `runOcrOnGrayFrame` 以傳遞三個布林旗標。
+- **Native 過濾器**：在 `opencv-jni.cpp` 實作基於 UTF-8 編碼的簡單字元類別識別，並在辨識後進行過濾。
+- **Usable 判斷**：若過濾後字串變為空，則該偵測框將被視為無效 (not usable)，不會在畫面上顯示結果。
+
+### 成果與遭遇問題
+
+- 成功實現精確的字符過濾，使用者可以只看數字或是只看中文。
+- 由於在 Native 層過濾，減少了傳回 Kotlin 的 JSON 體積。
+
+### 下一步規劃
+
+1. 考慮加入常用符號（如貨幣符號、括號）的獨立開關。
+2. 優化過濾邏輯以支援更精細的 Unicode 區段。
 
 ---
 

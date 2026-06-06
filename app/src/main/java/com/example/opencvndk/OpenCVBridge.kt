@@ -46,6 +46,9 @@ object OpenCVBridge {
      * @param height      影像原始高度
      * @param rotationDegrees 影像旋轉角度 (0, 90, 180, 270)
      * @param modelDir    app 私有目錄中的 OCR 模型路徑
+     * @param useChinese  是否保留中文結果
+     * @param useEnglish  是否保留英文結果
+     * @param useNumbers  是否保留數字結果
      */
     external fun runOcrOnGrayFrame(
         yPlane: ByteBuffer,
@@ -53,6 +56,9 @@ object OpenCVBridge {
         width: Int,
         height: Int,
         rotationDegrees: Int,
-        modelDir: String
+        modelDir: String,
+        useChinese: Boolean,
+        useEnglish: Boolean,
+        useNumbers: Boolean
     ): String
 }
