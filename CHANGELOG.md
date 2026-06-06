@@ -3,8 +3,8 @@ name:            "CHANGELOG.md"
 description:     "opencv-ndk 專案變更歷史紀錄"
 created_date:    "2026/06/02 13:29:51"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.2"
-document_version: "1.3.0"
+project_version: "0.2.3"
+document_version: "1.4.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -15,6 +15,12 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 版本號遞增遵循 10 進位原則（當 PATCH/MINOR 滿 10 時進位）。
 
 ---
+
+## [0.2.3] — 2026-06-06
+
+### Changed
+- 簡化 OCR 偵測可視化：將繪製完整的「偵測矩形框」改為僅繪製「左上角小圓點」，以追求極致的渲染效能。
+- 更新 `MainActivity.kt` 中的繪製邏輯與 `Paint` 設定。
 
 ## [0.2.2] — 2026-06-06
 

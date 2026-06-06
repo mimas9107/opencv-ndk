@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     private val latestDetections = CopyOnWriteArrayList<Rect>()
     private val detectionPaint = Paint().apply {
         color = Color.CYAN
-        style = Paint.Style.STROKE
+        style = Paint.Style.FILL
         strokeWidth = 4f
         isAntiAlias = true
     }
@@ -172,7 +172,8 @@ class MainActivity : AppCompatActivity() {
             if (showDetections.get()) {
                 val canvas = Canvas(bitmap)
                 latestDetections.forEach { rect ->
-                    canvas.drawRect(rect, detectionPaint)
+                    // 僅繪製左上角的一個小圓點 (半徑為 5)
+                    canvas.drawCircle(rect.left.toFloat(), rect.top.toFloat(), 5f, detectionPaint)
                 }
             }
 

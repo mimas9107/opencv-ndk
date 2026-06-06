@@ -3,8 +3,8 @@ name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.2"
-document_version: "1.3.0"
+project_version: "0.2.3"
+document_version: "1.4.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -156,6 +156,30 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 
 1. 測試在不同距離下，中心 ROI 對辨識率的影響。
 2. 考慮是否需要提供手動調整 ROI 比例的功能。
+
+---
+
+## 2026-06-06 — 偵測可視化簡化 (v0.2.3)
+
+### 背景描述
+
+為了將渲染層的開銷降至最低，並在介面上提供更簡潔的視覺回饋。
+
+### 實作內容與過程
+
+- **繪製邏輯變更**：將 `Canvas.drawRect` 替換為 `Canvas.drawCircle`。
+- **點位選取**：僅取偵測方框的 `(left, top)` 座標作為繪製點。
+- **效能考量**：繪製單點比繪製四條邊組成的矩形框在指令層級更為簡約。
+
+### 成果與遭遇問題
+
+- UI 畫面變得更加清爽，偵測結果以點的形式呈現。
+- 用戶仍能透過點的位置確認偵測發生的區域。
+
+### 下一步規劃
+
+1. 觀察在多個偵測目標同時出現時，點位顯示的清晰度。
+2. 考慮是否需要根據信心值調整點的大小。
 
 ---
 
