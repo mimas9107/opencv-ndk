@@ -3,8 +3,8 @@ name:            "SPEC.md"
 description:     "opencv-ndk 設計規格書 — 將 OpenCV 移植至 Android NDK"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.4"
-document_version: "1.5.0"
+project_version: "0.2.5"
+document_version: "1.6.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -196,12 +196,12 @@ CameraX Y plane
 - 偵測信心值門檻 (Confidence): `0.96`
 - 新增功能: UI 可選之偵測外框繪製 (Cyan stroke)
 
-### 10.6 中心區域偵測 (v0.2.2 ~ v0.2.4)
+### 10.6 中心區域偵測 (v0.2.2 ~ v0.2.5)
 
 - 偵測範圍限制：僅處理影像中心 50% 寬度與 50% 高度的區域。
 - 座標處理：在 Native 層自動補償裁切位移，UI 維持全圖座標顯示。
 - 可視化優化 (v0.2.3)：將原本的矩形外框繪製簡化為偵測框左上角的一個小點 (Cyan point)，降低渲染開銷。
-- 字符過濾 (v0.2.4)：新增中文、英文、數字之分類開關，於 Native 層過濾辨識字串，僅保留勾選類別。
+- 字符過濾與 UI 同步 (v0.2.4 ~ v0.2.5)：新增中/英/數分類開關，並於 v0.2.5 修正 UI 邏輯，僅顯示與繪製符合過濾類別的有效 (usable) 結果。
 
 ### 10.7 驗證結果
 

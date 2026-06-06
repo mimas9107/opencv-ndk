@@ -16,6 +16,12 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 
 ---
 
+## [0.2.5] — 2026-06-06
+
+### Changed
+- 修修正 UI 顯示邏輯：當 OCR 辨識結果因字符過濾（中/英/數）被排除時，UI 不再顯示該偵測項目的編號與信心值，確保介面純淨。
+- 連動偵測點 (Cyan Point)：僅在結果被視為「有效 (usable)」時才繪製偵測點，使視覺反饋與過濾設定完全一致。
+
 ## [0.2.4] — 2026-06-06
 
 ### Added

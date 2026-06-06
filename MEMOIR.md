@@ -3,8 +3,8 @@ name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.4"
-document_version: "1.5.0"
+project_version: "0.2.5"
+document_version: "1.6.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -205,6 +205,29 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 
 1. 考慮加入常用符號（如貨幣符號、括號）的獨立開關。
 2. 優化過濾邏輯以支援更精細的 Unicode 區段。
+
+---
+
+## 2026-06-06 — UI 與過濾邏輯同步 (v0.2.5)
+
+### 背景描述
+
+在 v0.2.4 實作字符過濾後，發現 UI 仍會顯示已過濾項目的編號與信心值（如 `#1 (conf=1.00)`），且偵測點仍會出現在畫面上，造成視覺混淆。
+
+### 實作內容與過程
+
+- **UI 過濾**：修改 `MainActivity.kt` 中的 `formatOcrSummary`，在遍歷 JSON 結果時檢查 `usable` 旗標。
+- **視覺同步**：僅將 `usable == true` 的矩形加入 `latestDetections`，確保畫面上的青色偵測點只出現在符合過濾條件的文字上。
+- **狀態顯示**：當過濾後無結果時，提示文字改為「目前沒有符合類別的辨識文字」。
+
+### 成果與遭遇問題
+
+- 視覺反饋與過濾開關完全一致。
+- 解決了模型在背景偵測到文字但使用者不想看時產生的「空白佔位」問題。
+
+### 下一步規劃
+
+1. 測試在極端過濾情況下（全關）的系統穩定性。
 
 ---
 

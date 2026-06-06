@@ -3,8 +3,8 @@ name:            "AGENTS.md"
 description:     "AI Agent 行為準則與專案啟動指引"
 created_date:    "2026/06/02 13:29:51"
 modified_date:   "2026/06/06 14:12:00"
-project_version: "0.2.4"
-document_version: "1.5.0"
+project_version: "0.2.5"
+document_version: "1.6.0"
 agent_sign:      ['human/mimas', 'gemini cli/gemini-2.0-flash']
 ---
 

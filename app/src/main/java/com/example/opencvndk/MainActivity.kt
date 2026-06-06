@@ -317,17 +317,21 @@ class MainActivity : AppCompatActivity() {
             val acceptedCount = root.optInt("acceptedCount", 0)
             val results = root.optJSONArray("results") ?: JSONArray()
 
-            // 更新偵測外框清單
+            // 更新偵測外框清單 (僅保留 usable 的結果，讓視覺與過濾開關同步)
             val newDetections = mutableListOf<Rect>()
+            val usableResults = mutableListOf<JSONObject>()
             for (i in 0 until results.length()) {
                 val item = results.getJSONObject(i)
-                val rect = Rect(
-                    item.optInt("x", 0),
-                    item.optInt("y", 0),
-                    item.optInt("x", 0) + item.optInt("w", 0),
-                    item.optInt("y", 0) + item.optInt("h", 0)
-                )
-                newDetections.add(rect)
+                if (item.optBoolean("usable", false)) {
+                    val rect = Rect(
+                        item.optInt("x", 0),
+                        item.optInt("y", 0),
+                        item.optInt("x", 0) + item.optInt("w", 0),
+                        item.optInt("y", 0) + item.optInt("h", 0)
+                    )
+                    newDetections.add(rect)
+                    usableResults.add(item)
+                }
             }
             latestDetections.clear()
             latestDetections.addAll(newDetections)
@@ -337,12 +341,12 @@ class MainActivity : AppCompatActivity() {
             if (message.isNotBlank()) {
                 lines += message
             }
-            if (results.length() == 0) {
-                lines += "目前沒有可顯示的辨識文字"
+            if (usableResults.isEmpty()) {
+                lines += "目前沒有符合類別的辨識文字"
             } else {
-                val maxLines = minOf(results.length(), 3)
-                for (index in 0 until maxLines) {
-                    val item = results.getJSONObject(index)
+                val displayCount = minOf(usableResults.size, 3)
+                for (index in 0 until displayCount) {
+                    val item = usableResults[index]
                     val text = item.optString("text", "")
                     val confidence = item.optDouble("detectionConfidence", Double.NaN)
                     val rect = Rect(
