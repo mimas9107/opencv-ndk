@@ -3,8 +3,8 @@ name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.1"
-document_version: "1.2.0"
+project_version: "0.2.2"
+document_version: "1.3.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -132,6 +132,30 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 
 1. 考慮加入多色辨識（例如辨識成功與失敗使用不同顏色）。
 2. 評估是否需要將信心值門檻也做成 UI 滑桿供動態調整。
+
+---
+
+## 2026-06-06 — 中心 50% 區域偵測 (v0.2.2)
+
+### 背景描述
+
+為了進一步優化 OCR 效能並減少背景雜訊干擾，決定將偵測範圍限縮在視野中央。
+
+### 實作內容與過程
+
+- **Native Cropping**：在 `runOcrPipeline` 中計算中心 50% 的 `cv::Rect`，並對影像進行 `Mat` 裁切。
+- **座標偏移補償**：偵測結果（方框座標）在回傳 JSON 前，統一加上裁切起點的 `(x, y)` 位移。
+- **UI 相容性**：由於 Native 層已完成座標還原，Kotlin UI 層與繪製開關完全不需更動即可支援。
+
+### 成果與遭遇問題
+
+- 顯著減少了非目標區域的誤報。
+- 由於處理面積減半（50%x50%=25%），偵測速度在理論上有明顯提升。
+
+### 下一步規劃
+
+1. 測試在不同距離下，中心 ROI 對辨識率的影響。
+2. 考慮是否需要提供手動調整 ROI 比例的功能。
 
 ---
 

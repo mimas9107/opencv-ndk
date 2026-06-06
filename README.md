@@ -3,8 +3,8 @@ name:            "README.md"
 description:     "OpenCV NDK 移植專案 — 為 Android (華為 P30 Pro / EMUI 12) 編譯 OpenCV 4.x"
 created_date:    "2026/06/02 13:29:51"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.1"
-document_version: "1.2.0"
+project_version: "0.2.2"
+document_version: "1.3.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 

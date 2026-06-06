@@ -3,8 +3,8 @@ name:            "CHANGELOG.md"
 description:     "opencv-ndk 專案變更歷史紀錄"
 created_date:    "2026/06/02 13:29:51"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.1"
-document_version: "1.2.0"
+project_version: "0.2.2"
+document_version: "1.3.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -15,6 +15,15 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 版本號遞增遵循 10 進位原則（當 PATCH/MINOR 滿 10 時進位）。
 
 ---
+
+## [0.2.2] — 2026-06-06
+
+### Added
+- 新增「中心 50% 區域偵測」功能：OCR 僅處理視野中央寬度與高度各 50% 的區域。
+- 實作 Native 層座標映射邏輯，將裁切區域的偵測結果正確還原至全圖座標。
+
+### Changed
+- 更新 `opencv-jni.cpp` 中的 `runOcrPipeline`，導入影像裁切與座標偏移補償。
 
 ## [0.2.1] — 2026-06-06
 

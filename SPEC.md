@@ -3,8 +3,8 @@ name:            "SPEC.md"
 description:     "opencv-ndk 設計規格書 — 將 OpenCV 移植至 Android NDK"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.1"
-document_version: "1.2.0"
+project_version: "0.2.2"
+document_version: "1.3.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -196,7 +196,12 @@ CameraX Y plane
 - 偵測信心值門檻 (Confidence): `0.96`
 - 新增功能: UI 可選之偵測外框繪製 (Cyan stroke)
 
-### 10.6 驗證結果
+### 10.6 中心區域偵測 (v0.2.2)
+
+- 偵測範圍限制：僅處理影像中心 50% 寬度與 50% 高度的區域。
+- 座標處理：在 Native 層自動補償裁切位移，UI 維持全圖座標顯示。
+
+### 10.7 驗證結果
 
 - P30 Pro 實機 app 啟動正常，無 `FATAL EXCEPTION`
 - 相機權限拒絕後重新允許，App 可恢復正常

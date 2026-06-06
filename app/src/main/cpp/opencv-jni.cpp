@@ -234,15 +234,23 @@ bool initOcrRuntime(const std::string& modelDir, std::string& errorMessage) {
 std::string runOcrPipeline(const cv::Mat& grayFrame) {
     auto& runtime = ocrRuntime();
 
+    // 計算中心 50% ROI (0.5x width, 0.5x height)
+    const int roiW = grayFrame.cols / 2;
+    const int roiH = grayFrame.rows / 2;
+    const int roiX = (grayFrame.cols - roiW) / 2;
+    const int roiY = (grayFrame.rows - roiH) / 2;
+    const cv::Rect centerRoi(roiX, roiY, roiW, roiH);
+
+    cv::Mat croppedGray = grayFrame(centerRoi);
     cv::Mat bgrFrame;
-    cv::cvtColor(grayFrame, bgrFrame, cv::COLOR_GRAY2BGR);
+    cv::cvtColor(croppedGray, bgrFrame, cv::COLOR_GRAY2BGR);
 
     std::vector<std::vector<cv::Point>> detections;
     std::vector<float> confidences;
 
     runtime.detector->detect(bgrFrame, detections, confidences);
 
-    LOGI("OCR 偵測候選框數量: %zu", detections.size());
+    LOGI("OCR 偵測候選框數量: %zu (中心 ROI 範圍: %dx%d)", detections.size(), roiW, roiH);
 
     std::vector<cv::Rect> acceptedRois;
     std::vector<std::size_t> acceptedIndices;
@@ -251,7 +259,7 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
 
     for (std::size_t i = 0; i < detections.size(); ++i) {
         const cv::Rect rawRect = cv::boundingRect(detections[i]);
-        const cv::Rect rect = clampRect(rawRect, grayFrame.size());
+        const cv::Rect rect = clampRect(rawRect, croppedGray.size());
         const float confidence = i < confidences.size() ? confidences[i] : -1.0f;
 
         const bool tooSmall = rect.width <= kMinOcrWidth || rect.height <= kMinOcrHeight;
@@ -283,7 +291,7 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
     if (acceptedRois.empty()) {
         return makeJsonStatus(
             "empty",
-            "沒有通過尺寸門檻的文字區塊",
+            "中心區域沒有通過門檻的文字區塊",
             static_cast<int>(detections.size()),
             0,
             "[]"
@@ -297,7 +305,11 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
     resultsJson << "[";
     std::size_t usableCount = 0;
     for (std::size_t i = 0; i < acceptedRois.size(); ++i) {
-        const cv::Rect& rect = acceptedRois[i];
+        const cv::Rect& rectInCrop = acceptedRois[i];
+        
+        // 映射回原始全圖座標
+        const cv::Rect rect(rectInCrop.x + roiX, rectInCrop.y + roiY, rectInCrop.width, rectInCrop.height);
+        
         const std::string text = i < recognizedTexts.size() ? recognizedTexts[i] : "";
         const float detectionConfidence = acceptedIndices[i] < confidences.size()
                                                ? confidences[acceptedIndices[i]]
