@@ -3,6 +3,9 @@ package com.example.opencvndk
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +26,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -40,6 +44,16 @@ class MainActivity : AppCompatActivity() {
     private var lastFpsTimestamp = System.currentTimeMillis()
     private var lastOcrDispatchTimestamp = 0L
     private val ocrInFlight = AtomicBoolean(false)
+    
+    // OCR 偵測結果顯示相關
+    private val showDetections = AtomicBoolean(false)
+    private val latestDetections = CopyOnWriteArrayList<Rect>()
+    private val detectionPaint = Paint().apply {
+        color = Color.CYAN
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
+        isAntiAlias = true
+    }
 
     private companion object {
         private const val TAG = "MainActivity"
@@ -58,6 +72,13 @@ class MainActivity : AppCompatActivity() {
         ocrModelDir = File(filesDir, "ocr").apply { mkdirs() }
         syncOcrAssetsToPrivateDir()
         binding.textOcrResult.text = "OCR 模型準備中..."
+
+        binding.switchShowDetections.setOnCheckedChangeListener { _, isChecked ->
+            showDetections.set(isChecked)
+            if (!isChecked) {
+                latestDetections.clear()
+            }
+        }
 
         // 檢查並請求相機權限
         if (allPermissionsGranted()) {
@@ -146,6 +167,14 @@ class MainActivity : AppCompatActivity() {
                 rotationDegrees = rotationDegrees,
                 outBitmap = bitmap
             )
+
+            // 若開啟偵測外框顯示，則在 Bitmap 上繪製
+            if (showDetections.get()) {
+                val canvas = Canvas(bitmap)
+                latestDetections.forEach { rect ->
+                    canvas.drawRect(rect, detectionPaint)
+                }
+            }
 
             // 4. 將結果渲染回 UI 畫面
             runOnUiThread {
@@ -276,6 +305,21 @@ class MainActivity : AppCompatActivity() {
             val candidateCount = root.optInt("candidateCount", 0)
             val acceptedCount = root.optInt("acceptedCount", 0)
             val results = root.optJSONArray("results") ?: JSONArray()
+
+            // 更新偵測外框清單
+            val newDetections = mutableListOf<Rect>()
+            for (i in 0 until results.length()) {
+                val item = results.getJSONObject(i)
+                val rect = Rect(
+                    item.optInt("x", 0),
+                    item.optInt("y", 0),
+                    item.optInt("x", 0) + item.optInt("w", 0),
+                    item.optInt("y", 0) + item.optInt("h", 0)
+                )
+                newDetections.add(rect)
+            }
+            latestDetections.clear()
+            latestDetections.addAll(newDetections)
 
             val lines = mutableListOf<String>()
             lines += "OCR: $status | candidates=$candidateCount accepted=$acceptedCount | ${ocrElapsedMs}ms"

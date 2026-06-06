@@ -3,9 +3,9 @@ name:            "CHANGELOG.md"
 description:     "opencv-ndk 專案變更歷史紀錄"
 created_date:    "2026/06/02 13:29:51"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.0"
-document_version: "1.1.0"
-agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
+project_version: "0.2.1"
+document_version: "1.2.0"
+agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
 # 變更歷史紀錄 (CHANGELOG)
@@ -15,6 +15,17 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 版本號遞增遵循 10 進位原則（當 PATCH/MINOR 滿 10 時進位）。
 
 ---
+
+## [0.2.1] — 2026-06-06
+
+### Added
+- 新增 OCR 偵測外框即時繪製功能，並在 UI 增加切換開關 (Toggle Switch)。
+- 在 `MainActivity.kt` 實作基於 `Canvas` 的即時外框繪製邏輯。
+
+### Changed
+- 調整 OCR ROI gate 門檻：下限調整為 `48x60`，上限調整為 `448x448`。
+- 強化 OCR 偵測過濾：新增信心值門檻，僅放行信心值 ≥ `0.96` 的候選框。
+- 更新 `opencv-jni.cpp` 以支援嚴格的信心值篩選與新的 ROI 尺寸限制。
 
 ## [0.2.0] — 2026-06-02
 

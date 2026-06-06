@@ -34,6 +34,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- OCR 偵測外框顯示開關 -->
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch_show_detections"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="#80000000"
+        android:padding="8dp"
+        android:text="顯示偵測外框 (Conf ≥ 0.96)"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/text_ocr_result"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <!-- OCR 最近一次辨識結果 -->
     <TextView
         android:id="@+id/text_ocr_result"

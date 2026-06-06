@@ -22,10 +22,11 @@
 
 namespace {
 
-constexpr int kMinOcrWidth = 64;
-constexpr int kMinOcrHeight = 64;
-constexpr int kMaxOcrWidth = 256;
-constexpr int kMaxOcrHeight = 256;
+constexpr int kMinOcrWidth = 48;
+constexpr int kMinOcrHeight = 60;
+constexpr int kMaxOcrWidth = 448;
+constexpr int kMaxOcrHeight = 448;
+constexpr float kMinConfidence = 0.96f;
 
 struct OcrRuntime {
     std::mutex mutex;
@@ -255,6 +256,7 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
 
         const bool tooSmall = rect.width <= kMinOcrWidth || rect.height <= kMinOcrHeight;
         const bool tooLarge = rect.width > kMaxOcrWidth || rect.height > kMaxOcrHeight;
+        const bool lowConfidence = confidence < kMinConfidence;
 
         if (tooSmall) {
             LOGD("OCR 候選框 #%zu 被略過: 太小 rect=(%d,%d,%d,%d) conf=%.3f",
@@ -264,6 +266,11 @@ std::string runOcrPipeline(const cv::Mat& grayFrame) {
         if (tooLarge) {
             LOGD("OCR 候選框 #%zu 被略過: 太大 rect=(%d,%d,%d,%d) conf=%.3f",
                  i, rect.x, rect.y, rect.width, rect.height, confidence);
+            continue;
+        }
+        if (lowConfidence) {
+            LOGD("OCR 候選框 #%zu 被略過: 信心值過低 conf=%.3f (門檻=%.3f)",
+                 i, confidence, kMinConfidence);
             continue;
         }
 

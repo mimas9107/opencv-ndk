@@ -3,9 +3,9 @@ name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.0"
-document_version: "1.1.0"
-agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
+project_version: "0.2.1"
+document_version: "1.2.0"
+agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
 # MEMOIR — 開發備忘錄與學習日誌
@@ -103,8 +103,35 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5']
 ### 下一步規劃
 
 1. 擴大 OCR 測試樣本，加入更多英文、數字與中文場景。
-2. 評估 release APK 體積是否需要拆分模型部署。
+2. 評估 release APK 體議是否需要拆分模型部署。
 3. 根據實際應用需求選擇下一個 OpenCV MVP。
+
+---
+
+## 2026-06-06 — OCR ROI 調優與偵測可視化 (v0.2.1)
+
+### 背景描述
+
+為了提升 OCR 的精準度並提供更好的調試工具，需要收緊信心值過濾，並讓使用者能直觀看到「哪些框被偵測到了」。
+
+### 實作內容與過程
+
+- **ROI Gate 調整**：上限放寬至 `448x448` 以支援較大字體，下限微調為 `48x60`。
+- **信心值硬過濾**：在 Native 層加入 `0.96` 的門檻，低於此值的候選框不回傳且不辨識，大幅減少誤報。
+- **可視化回饋**：
+    - 在 `MainActivity` 增加 `Canvas` 繪製邏輯，將 JNI 回傳的 Rect 座標畫在預覽圖層上。
+    - 增加 UI `SwitchCompat` 連動 `AtomicBoolean` 旗標，實現無縫開關繪製功能。
+
+### 成果與遭遇問題
+
+- 使用者可手動切換開關觀察偵測狀態。
+- 繪製邏輯實作在 `processImageFrame` 的灰階 Bitmap 上，不影響 CameraX 原始幀，效能負擔極小。
+- 修正了初期小框誤判的問題，偵測結果更為純淨。
+
+### 下一步規劃
+
+1. 考慮加入多色辨識（例如辨識成功與失敗使用不同顏色）。
+2. 評估是否需要將信心值門檻也做成 UI 滑桿供動態調整。
 
 ---
 
