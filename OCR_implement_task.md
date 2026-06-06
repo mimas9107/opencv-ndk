@@ -142,3 +142,32 @@
 - [x] 若 APK 體積過大，評估模型改為 app 私有目錄載入
 - [x] 若中文辨識效果不足，評估更換字庫或模型
 - [x] 若 DNN 效能無法接受，先縮減分析頻率，不要立刻破壞 preview
+
+## Phase 5 - Advanced Features & Optimization (v0.2.x)
+
+### 5.1 信心值與視覺化優化 (v0.2.1 & v0.2.3)
+
+- [x] 實作 0.96 信心值硬過濾，減少背景雜訊誤報
+- [x] 實作 UI 偵測外框繪製開關，使用 `SwitchCompat` 控制
+- [x] 優化繪製效能：將完整的矩形框簡化為左上角的「偵測點 (Cyan Point)」 (v0.2.3)
+
+### 5.2 區域偵測優化 (v0.2.2)
+
+- [x] 實作「中心 50% ROI」偵測：縮減搜尋空間以提升效能與精確度
+- [x] 實作 Native 層座標補償映射，確保偵測點能精準對應全圖位置
+
+### 5.3 字符類別過濾 (v0.2.4 & v0.2.5)
+
+- [x] 實作「中、英、數」字符類別過濾開關
+- [x] 在 Native 層實作基於 UTF-8 的字元過濾器，僅保留勾選類別
+- [x] 實作 UI 顯示同步：若辨識結果被過濾，則不顯示其編號、信心值與偵測點 (v0.2.5)
+
+## Phase 6 - Data Collection & Training Preparation (v0.2.6)
+
+### 6.1 影像擷取功能 (Training Data Capture)
+
+- [x] 在 UI 加入「擷取 (Capture)」按鈕
+- [x] 實作僅捕捉 Preview 視野範圍的影像存檔邏輯（存為 JPEG 格式）
+- [x] 儲存路徑設為 `getExternalFilesDir(Environment.DIRECTORY_PICTURES)`
+- [x] 檔名包含時間戳記 (`OCR_TRAIN_YYYYMMDD_HHMMSS.jpg`)
+- [x] 完成後可手動觸發存檔，並透過 `adb pull` 驗證影像內容

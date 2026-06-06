@@ -3,8 +3,8 @@ name:            "MEMOIR.md"
 description:     "opencv-ndk 專案開發備忘錄、學習日誌與疑難排解紀錄"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.5"
-document_version: "1.6.0"
+project_version: "0.2.6"
+document_version: "1.7.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -228,6 +228,30 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 ### 下一步規劃
 
 1. 測試在極端過濾情況下（全關）的系統穩定性。
+
+---
+
+## 2026-06-06 — 訓練資料收集功能 (v0.2.6)
+
+### 背景描述
+
+為了未來能夠自行訓練或微調更適合特定場景的 CNN 模型，需要一種簡單的方式從實機擷取預覽畫面。
+
+### 實作內容與過程
+
+- **UI 擴充**：在 `activity_main.xml` 右下角加入一個 `btn_capture` 按鈕。
+- **異步存檔**：建立 `saveExecutor` 執行緒池，避免在主執行緒或相機執行緒進行檔案寫入造成卡頓。
+- **保持資料純淨**：在 `processImageFrame` 中，擷取邏輯位於「繪製偵測點」之前。這確保了存下的訓練影像不會帶有任何 UI 繪製的標記點。
+- **路徑選擇**：使用 `getExternalFilesDir(Environment.DIRECTORY_PICTURES)`。這在 Android 12 上不需額外權限，且對開發者而言，透過電腦掛載或 `adb pull` 非常容易取得。
+
+### 成果與遭遇問題
+
+- 成功實作單幀擷取。
+- 透過 `bitmap.copy` 解決了 `outputBitmap` 在背景執行緒存檔時被下一幀覆蓋的問題。
+
+### 下一步規劃
+
+1. 測試連續擷取時的記憶體壓力。
 
 ---
 

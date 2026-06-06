@@ -22,18 +22,23 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.Locale
+import android.os.Environment
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var ocrExecutor: ExecutorService
+    private lateinit var saveExecutor: ExecutorService
     private lateinit var ocrModelDir: File
 
     // 用於 JNI 寫入並顯示的雙緩衝 Bitmap
@@ -44,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var lastFpsTimestamp = System.currentTimeMillis()
     private var lastOcrDispatchTimestamp = 0L
     private val ocrInFlight = AtomicBoolean(false)
+    private val isCaptureRequested = AtomicBoolean(false)
     
     // OCR 偵測結果顯示相關
     private val showDetections = AtomicBoolean(false)
@@ -72,9 +78,15 @@ class MainActivity : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
         ocrExecutor = Executors.newSingleThreadExecutor()
+        saveExecutor = Executors.newSingleThreadExecutor()
         ocrModelDir = File(filesDir, "ocr").apply { mkdirs() }
         syncOcrAssetsToPrivateDir()
         binding.textOcrResult.text = "OCR 模型準備中..."
+
+        binding.btnCapture.setOnClickListener {
+            isCaptureRequested.set(true)
+            Toast.makeText(this, "擷取請求中...", Toast.LENGTH_SHORT).show()
+        }
 
         binding.switchShowDetections.setOnCheckedChangeListener { _, isChecked ->
             showDetections.set(isChecked)
@@ -174,6 +186,14 @@ class MainActivity : AppCompatActivity() {
                 rotationDegrees = rotationDegrees,
                 outBitmap = bitmap
             )
+
+            // 若有擷取請求，在繪製偵測框前先存檔 (保持訓練資料純淨)
+            if (isCaptureRequested.getAndSet(false)) {
+                val bitmapToSave = bitmap.copy(bitmap.config, false)
+                saveExecutor.execute {
+                    saveTrainingImage(bitmapToSave)
+                }
+            }
 
             // 若開啟偵測外框顯示，則在 Bitmap 上繪製
             if (showDetections.get()) {
@@ -394,9 +414,38 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun saveTrainingImage(bitmap: Bitmap) {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val fileName = "OCR_TRAIN_$timeStamp.jpg"
+        // 儲存於 App 私有的圖片目錄，便於 adb pull
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val imageFile = File(storageDir, fileName)
+
+        try {
+            FileOutputStream(imageFile).use { out ->
+                // 使用較高品質 (95) 的 JPEG 格式儲存
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, out)
+            }
+            runOnUiThread {
+                Toast.makeText(this, "影像已儲存: $fileName", Toast.LENGTH_SHORT).show()
+                Log.d(TAG, "Training image saved: ${imageFile.absolutePath}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "影像儲存失敗", e)
+            runOnUiThread {
+                Toast.makeText(this, "儲存失敗: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        } finally {
+            // 釋放複製出來的 Bitmap 記憶體
+            bitmap.recycle()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
         ocrExecutor.shutdown()
+        saveExecutor.shutdown()
+        outputBitmap?.recycle()
     }
 }

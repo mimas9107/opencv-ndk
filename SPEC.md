@@ -3,8 +3,8 @@ name:            "SPEC.md"
 description:     "opencv-ndk 設計規格書 — 將 OpenCV 移植至 Android NDK"
 created_date:    "2026/06/02 13:33:16"
 modified_date:   "2026/06/02 17:41:22"
-project_version: "0.2.5"
-document_version: "1.6.0"
+project_version: "0.2.6"
+document_version: "1.7.0"
 agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemini cli/gemini-2.0-flash']
 ---
 
@@ -131,9 +131,10 @@ opencv-ndk/
 - [x] 基於 Jetpack CameraX 實現相機框架，並透過 JNI 將圖像幀（YUV_420_888）傳送至 C++ 層。
 - [x] C++ 層利用 OpenCV `imgproc` 將圖像轉換為灰階 (Grayscale) 並渲染回畫面。
 - [x] 完成 OCR MVP：文字偵測、ROI gate、文字辨識與 UI 顯示。
-- [ ] 評估採用封裝好的 AAR 形式，還是直接引用獨立 `.so` 檔。
-- [ ] 確認是否需要使用 opencv_contrib 擴充模組。（初期 MVP 不需使用）。
-- [ ] 制定華為 EMUI 系統限制（例如無內建 Google Play 服務）的應對機制。
+- [x] 評估採用封裝好的 AAR 形式，還是直接引用獨立 `.so` 檔。 -> **已採用直接引用獨立 `.so` 檔，便於 NDK 調試。**
+- [x] 確認是否需要使用 opencv_contrib 擴充模組。（初期 MVP 不需使用）。 -> **目前僅使用 `dnn` 與 `imgproc` 核心模組，不需 contrib。**
+- [x] 制定華為 EMUI 系統限制（例如無內建 Google Play 服務）的應對機制。 -> **採用 CameraX 與原生權限流程，並透過 APK 直接部署，避開 Play Services 依賴。**
+- [x] (v0.2.6) 實作影像擷取功能：於 UI 加入按鈕捕捉 Preview 畫面存檔，用於後續 CNN 模型訓練數據收集。
 
 ---
 

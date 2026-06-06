@@ -16,6 +16,13 @@ agent_sign:      ['human/mimas', 'antigravity/Antigravity', 'codex/GPT-5', 'gemi
 
 ---
 
+## [0.2.6] — 2026-06-06
+
+### Added
+- 新增「影像擷取」功能：在 UI 加入擷取按鈕，可捕捉當前 Preview 視野的灰階影像並存為 JPEG，專供後續 CNN 模型訓練數據收集使用。
+- 實作擷取專用線程池 (saveExecutor)，確保檔案寫入不影響即時預覽效能。
+- 擷取路徑位於 `getExternalFilesDir(Environment.DIRECTORY_PICTURES)`，檔名包含時間戳記。
+
 ## [0.2.5] — 2026-06-06
 
 ### Changed
